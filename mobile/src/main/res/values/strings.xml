@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">awear</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="mapsApiKey">AIzaSyCQpTf5enMpZh5YWkWQCXwc6rhC3gEQ0us</string>
+
+</resources>
