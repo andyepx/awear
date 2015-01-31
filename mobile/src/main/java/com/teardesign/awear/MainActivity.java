@@ -2,8 +2,11 @@ package com.teardesign.awear;
 
 import android.app.Activity;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -23,6 +26,10 @@ import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.Parse;
+import com.parse.ParseACL;
+import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
@@ -32,21 +39,62 @@ import fi.foyt.foursquare.api.entities.Category;
 import fi.foyt.foursquare.api.entities.CompactVenue;
 import fi.foyt.foursquare.api.entities.VenuesSearchResult;
 
-import com.teardesign.awear.Secrets;
-
 
 public class MainActivity extends Activity {
 
     GoogleMap googleMap;
     Marker m;
     CompactVenue[] loadedVenues = null;
+    ParseUser currentUser = null;
+    Boolean running = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        createMapView();
-        addMarker();
+
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this, Secrets.parseAppID, Secrets.parseAppSecret);
+
+        currentUser = ParseUser.getCurrentUser();
+
+        if (currentUser != null) {
+
+            running = true;
+
+            setContentView(R.layout.activity_main);
+            createMapView();
+            addMarker();
+
+        } else {
+
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
+        currentUser = ParseUser.getCurrentUser();
+
+        if (currentUser != null && !running) {
+
+            setContentView(R.layout.activity_main);
+            createMapView();
+            addMarker();
+
+        } else if (!running) {
+
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent);
+
+        }
+
     }
 
     /**
@@ -131,6 +179,20 @@ public class MainActivity extends Activity {
                     LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
                     m.setPosition(currentLocation);
                     googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
+
+                    ParseObject locationObject = new ParseObject("LocationHistory");
+                    locationObject.put("lat", currentLocation.latitude);
+                    locationObject.put("lng", currentLocation.longitude);
+                    locationObject.put("user", currentUser);
+
+                    ParseACL dataPermission = new ParseACL();
+                    dataPermission.setPublicReadAccess(false);
+                    dataPermission.setReadAccess(currentUser, true);
+                    dataPermission.setPublicWriteAccess(false);
+                    dataPermission.setWriteAccess(currentUser, true);
+
+                    locationObject.setACL(dataPermission);
+                    locationObject.saveInBackground();
 
                     if (loadedVenues == null) {
                         try {
