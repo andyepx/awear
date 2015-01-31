@@ -20,12 +20,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 import android.view.Window;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.*;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataEvent;
+import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.Wearable;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseObject;
@@ -40,13 +50,20 @@ import fi.foyt.foursquare.api.entities.CompactVenue;
 import fi.foyt.foursquare.api.entities.VenuesSearchResult;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements
+        DataApi.DataListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     GoogleMap googleMap;
     Marker m;
     CompactVenue[] loadedVenues = null;
     ParseUser currentUser = null;
     Boolean running = false;
+
+    private GoogleApiClient mGoogleApiClient;
+    private int count = 0;
+    private static final String COUNT_KEY = "com.teardesign.awear.count";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +75,22 @@ public class MainActivity extends Activity {
 
         currentUser = ParseUser.getCurrentUser();
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+
+        mGoogleApiClient.connect();
+
         if (currentUser != null) {
 
             running = true;
 
             setContentView(R.layout.activity_main);
-            createMapView();
-            addMarker();
+            //createMapView();
+            //addMarker();
+
 
         } else {
 
@@ -81,12 +107,13 @@ public class MainActivity extends Activity {
         super.onResume();
 
         currentUser = ParseUser.getCurrentUser();
+        mGoogleApiClient.connect();
 
         if (currentUser != null && !running) {
 
             setContentView(R.layout.activity_main);
-            createMapView();
-            addMarker();
+            //createMapView();
+            //addMarker();
 
         } else if (!running) {
 
@@ -97,23 +124,56 @@ public class MainActivity extends Activity {
 
     }
 
+    @Override
+    public void onConnected(Bundle bundle) {
+        Wearable.DataApi.addListener(mGoogleApiClient, this);
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Wearable.DataApi.removeListener(mGoogleApiClient, this);
+        mGoogleApiClient.disconnect();
+    }
+
+    @Override
+    public void onDataChanged(DataEventBuffer dataEvents) {
+        for (DataEvent event : dataEvents) {
+            if (event.getType() == DataEvent.TYPE_CHANGED) {
+                // DataItem changed
+                DataItem item = event.getDataItem();
+                if (item.getUri().getPath().compareTo("/count") == 0) {
+                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+                    updateCount(dataMap.getInt(COUNT_KEY));
+                }
+            } else if (event.getType() == DataEvent.TYPE_DELETED) {
+                // DataItem deleted
+            }
+        }
+    }
+
+    // Our method to update the count
+    private void updateCount(int c) {
+        count = c;
+        TextView tv = (TextView) findViewById(R.id.count_value);
+        tv.setText(Integer.toString(count));
+    }
+
     /**
      * Initialises the mapview
      */
     private void createMapView(){
-        /**
-         * Catch the null pointer exception that
-         * may be thrown when initialising the map
-         */
+        /*
         try {
             if(null == googleMap){
                 googleMap = ((MapFragment) getFragmentManager().findFragmentById(
                         R.id.mapView)).getMap();
 
-                /**
-                 * If the map is still null after attempted initialisation,
-                 * show an error to the user
-                 */
                 if(null == googleMap) {
                     Toast.makeText(getApplicationContext(),
                             "Error creating map", Toast.LENGTH_SHORT).show();
@@ -121,7 +181,12 @@ public class MainActivity extends Activity {
             }
         } catch (NullPointerException exception){
             Log.e("mapApp", exception.toString());
-        }
+        }*/
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 
     private class FoursquareAPIAccess extends AsyncTask<LatLng, Integer, CompactVenue[]> {

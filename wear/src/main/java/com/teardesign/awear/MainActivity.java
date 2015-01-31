@@ -20,21 +20,34 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 import java.util.Date;
 
 public class MainActivity extends Activity {
 
+    private static final String COUNT_KEY = "com.teardesign.awear.count";
     private TextView mTextView;
     private static String TAG = "Wear";
+
+    GoogleApiClient mGoogleApiClient;
+    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
+        System.out.println("HELLO WEAR!!!");
+
+        //Log.d(TAG, "Wearable Awear...");
+
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                     @Override
                     public void onConnected(Bundle connectionHint) {
@@ -54,6 +67,8 @@ public class MainActivity extends Activity {
                 })
                 .addApi(Wearable.API)
                 .build();
+
+        mGoogleApiClient.connect();
 
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
@@ -77,14 +92,35 @@ public class MainActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         TextView tv = (TextView) findViewById(R.id.text);
-                        tv.setText(new Date().toString());
+                        tv.setText(Integer.toString(count));
+                        increaseCounter();
                     }
                 });
 
             }
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        //Log.d(TAG, "Wearable Resume...");
+    }
 
+    // Create a data map and put data in it
+    private void increaseCounter() {
+        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/count");
+        putDataMapReq.getDataMap().putInt(COUNT_KEY, count++);
+        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+        PendingResult<DataApi.DataItemResult> pendingResult =
+                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+
+        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
+            @Override
+            public void onResult(DataApi.DataItemResult dataItemResult) {
+                Log.d("RESULT", dataItemResult.toString());
+            }
+        });
     }
 }
