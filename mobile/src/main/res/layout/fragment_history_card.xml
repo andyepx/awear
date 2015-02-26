@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:card_view="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:padding="10dp"
+android:orientation="vertical"
+tools:context="com.teardesign.awear.HistoryCardFragment"
+android:layout_height="match_parent">
+
+<android.support.v7.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_gravity="top"
+    android:layout_width="match_parent"
+    android:layout_height="78dp"
+    card_view:cardBackgroundColor="#3949AB"
+    card_view:cardElevation="2sp"
+    card_view:cardCornerRadius="4dp">
+
+    <GridLayout
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:text="$$$"
+            android:padding="5dp"
+            android:textSize="20dp"
+            android:id="@+id/history_count_value" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
+            android:text=""
+            android:textSize="20dp"
+            android:padding="5dp"
+            android:id="@+id/history_location_value" />
+
+    </GridLayout>
+
+</android.support.v7.widget.CardView>
+
+</LinearLayout>

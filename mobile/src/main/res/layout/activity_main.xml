@@ -1,21 +1,57 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    tools:ignore="MergeRootFrame">
+    android:padding="10dp"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_gravity="top"
+    android:layout_width="match_parent"
+    android:layout_height="78dp"
+    card_view:cardBackgroundColor="#3949AB"
+    card_view:cardElevation="2sp"
+    card_view:cardCornerRadius="4dp">
+
+        <GridLayout
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:text="Waiting..."
+                android:padding="5dp"
+                android:textSize="20dp"
+                android:id="@+id/count_value" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:text=""
+                android:textSize="20dp"
+                android:padding="5dp"
+                android:id="@+id/location_value" />
+
+        </GridLayout>
+
+    </android.support.v7.widget.CardView>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/count_value" />
+        android:textColor="#37474F"
+        android:text="History"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:paddingLeft="0dp"
+        android:textSize="20dp"
+        android:id="@+id/hisotry_title" />
 
-    <!--
-    <fragment
-        android:id="@+id/mapView"
-        android:name="com.google.android.gms.maps.MapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>-->
-
-    </FrameLayout>
+</LinearLayout>
