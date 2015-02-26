@@ -55,18 +55,21 @@ public class HistoryCardFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TextView amountHistory = (TextView) getView().findViewById(R.id.history_count_value);
-        amountHistory.setText("$"+Integer.toString(mAmount)+" at ");
-
-        TextView locationHistory = (TextView) getView().findViewById(R.id.history_location_value);
-        locationHistory.setText(mLocation);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_history_card, container, false);
+        View v = inflater.inflate(R.layout.fragment_history_card, container, false);
+
+        TextView amountHistory = (TextView) v.findViewById(R.id.history_count_value);
+        amountHistory.setText("$"+Integer.toString(mAmount)+" at ");
+
+        TextView locationHistory = (TextView) v.findViewById(R.id.history_location_value);
+        locationHistory.setText(mLocation);
+
+        return v;
     }
 
     @Override

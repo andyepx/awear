@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -22,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 import android.view.Window;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,14 +44,18 @@ import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
+import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.lang.reflect.Array;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import fi.foyt.foursquare.api.*;
@@ -60,7 +67,8 @@ import fi.foyt.foursquare.api.entities.VenuesSearchResult;
 public class MainActivity extends Activity implements
         DataApi.DataListener,
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        HistoryCardFragment.OnFragmentInteractionListener {
 
     GoogleMap googleMap;
     Marker m;
@@ -105,12 +113,40 @@ public class MainActivity extends Activity implements
             setContentView(R.layout.activity_main);
             //createMapView();
             //addMarker();
+            createHistoryCards();
         } else {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
         }
 
     }
+
+    private void createHistoryCards() {
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("ExpenseHistory");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> scoreList, com.parse.ParseException e) {
+                if (e == null) {
+
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+                    for (ParseObject sl : scoreList) {
+                        HistoryCardFragment historyCard = HistoryCardFragment.newInstance(sl.getInt("amount"), sl.getString("venue"), null);
+                        ft.add(R.id.main_container, historyCard);
+                    }
+
+                    ft.commit();
+
+                    Log.d("score", "Retrieved " + scoreList.size() + " scores");
+                } else {
+                    Log.d("score", "Error: " + e.getMessage());
+                }
+            }
+        });
+
+    }
+
+
 
     @Override
     protected void onResume() {
@@ -122,7 +158,7 @@ public class MainActivity extends Activity implements
 
         if (currentUser != null && !running) {
             setContentView(R.layout.activity_main);
-
+            createHistoryCards();
             //createMapView();
             //addMarker();
         } else if (!running) {
@@ -147,31 +183,6 @@ public class MainActivity extends Activity implements
         super.onPause();
         Wearable.DataApi.removeListener(mGoogleApiClient, this);
         mGoogleApiClient.disconnect();
-    }
-
-    private String findCategoryRoot(String cID, String rootName, Category cc[]) {
-
-        boolean isRoot = false;
-        if (cc == null) {
-            isRoot = true;
-            cc = categories;
-        }
-
-        for (Category c : cc) {
-            if (isRoot) rootName = c.getName();
-            Category children[] = c.getCategories();
-            if (children != null && children.length > 0) {
-                String cn = findCategoryRoot(cID, rootName, children);
-                if (cn.length() > 0) {
-                    return cn;
-                }
-            }
-            if (c.getId().compareTo(cID) == 0) {
-                return rootName;
-            }
-        }
-
-        return "";
     }
 
     @Override
@@ -205,25 +216,15 @@ public class MainActivity extends Activity implements
 
                                         for (CompactVenue venue : loadedVenues) {
                                             float distance = 0;
-                                            //String allowedCategories[] = new String[2];
-                                            //allowedCategories[0] = "Food";
-                                            //allowedCategories[1] = "Shop & Service";
-                                            //Boolean toAdd = false;
-                                            //for (Category c : venue.getCategories()) {
-                                            //    String root = findCategoryRoot(c.getId(), null, null);
-                                            //    toAdd = Arrays.asList(allowedCategories).contains(root);
-                                            //}
-                                            //if (toAdd) {
-                                                float[] results = new float[3];
-                                                Location.distanceBetween(currentLocation.latitude, currentLocation.longitude, venue.getLocation().getLat(), venue.getLocation().getLng(), results);
-                                                if (distance == 0) {
-                                                    distance = results[0];
-                                                    currentVenue = venue;
-                                                } else if (results[0] < distance) {
-                                                    distance = results[0];
-                                                    currentVenue = venue;
-                                                }
-                                            //}
+                                            float[] results = new float[3];
+                                            Location.distanceBetween(currentLocation.latitude, currentLocation.longitude, venue.getLocation().getLat(), venue.getLocation().getLng(), results);
+                                            if (distance == 0) {
+                                                distance = results[0];
+                                                currentVenue = venue;
+                                            } else if (results[0] < distance) {
+                                                distance = results[0];
+                                                currentVenue = venue;
+                                            }
                                         }
 
                                         if (currentVenue != null) {
@@ -317,6 +318,11 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
     }
 
