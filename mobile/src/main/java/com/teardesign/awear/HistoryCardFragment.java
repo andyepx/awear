@@ -1,15 +1,26 @@
 package com.teardesign.awear;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 
 /**
@@ -20,13 +31,16 @@ import com.google.android.gms.maps.model.LatLng;
  * Use the {@link HistoryCardFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HistoryCardFragment extends Fragment {
+public class HistoryCardFragment extends Fragment implements OnMapReadyCallback {
 
     private static int mAmount;
     private static String mLocation;
     private static LatLng mCoordinates;
 
+    GoogleMap googleMap;
+
     private OnFragmentInteractionListener mListener;
+    private Activity myContext;
 
     /**
      * Use this factory method to create a new instance of
@@ -63,6 +77,8 @@ public class HistoryCardFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_history_card, container, false);
 
+        createMapView(v);
+
         TextView amountHistory = (TextView) v.findViewById(R.id.history_count_value);
         amountHistory.setText("$"+Integer.toString(mAmount)+" at ");
 
@@ -74,6 +90,7 @@ public class HistoryCardFragment extends Fragment {
 
     @Override
     public void onAttach(Activity activity) {
+        myContext = activity;
         super.onAttach(activity);
         try {
             mListener = (OnFragmentInteractionListener) activity;
@@ -89,6 +106,27 @@ public class HistoryCardFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        try {
+            if(null == googleMap){
+                //googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.mapView)).getMap();
+
+                //googleMap = ((MapView) v.findViewById(R.id.mapView)).getMap();
+                //googleMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.mapView)).getMap();
+
+                googleMap.setMyLocationEnabled(true);
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCoordinates, 13));
+
+                googleMap.addMarker(new MarkerOptions()
+                        .title(mLocation)
+                        .position(mCoordinates));
+            }
+        } catch (NullPointerException exception){
+            Log.e("mapApp", exception.toString());
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -101,6 +139,22 @@ public class HistoryCardFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         public void onFragmentInteraction(Uri uri);
+    }
+
+    /**
+     * Initialises the mapview
+     */
+    private void createMapView(View v) {
+        FragmentManager fm = getChildFragmentManager();
+        //MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.mapView);
+        googleMap = ((MapFragment) fm.findFragmentById(R.id.mapView)).getMap();
+        googleMap.setMyLocationEnabled(true);
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCoordinates, 20));
+
+        googleMap.addMarker(new MarkerOptions()
+                .title(mLocation)
+                .position(mCoordinates));
+        //mapFragment.getMapAsync(this);
     }
 
 }

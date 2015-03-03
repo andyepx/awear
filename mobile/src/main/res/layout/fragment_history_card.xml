@@ -4,15 +4,19 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:orientation="vertical"
 tools:context="com.teardesign.awear.HistoryCardFragment"
-android:layout_height="84dp">
+android:layout_height="205dp">
 
 <android.support.v7.widget.CardView
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
     android:layout_gravity="top"
     android:layout_width="match_parent"
-    android:layout_height="78dp"
+    android:layout_height="198dp"
+    android:padding="0dp"
     card_view:cardBackgroundColor="#1E88E5"
+    card_view:contentPadding="0dp"
+    card_view:cardUseCompatPadding="false"
+    card_view:cardPreventCornerOverlap="false"
     card_view:cardElevation="2sp"
     card_view:cardCornerRadius="4dp">
 
@@ -21,6 +25,17 @@ android:layout_height="84dp">
         android:padding="5dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <!--<com.google.android.gms.maps.MapView-->
+            <!--android:id="@+id/mapView"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="120dp" />-->
+
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:id="@+id/mapView"
+            android:name="com.google.android.gms.maps.MapFragment" />
 
         <TextView
             android:layout_width="match_parent"

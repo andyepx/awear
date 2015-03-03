@@ -15,6 +15,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -131,8 +132,9 @@ public class MainActivity extends Activity implements
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
 
                     for (ParseObject sl : scoreList) {
-                        HistoryCardFragment historyCard = HistoryCardFragment.newInstance(sl.getInt("amount"), sl.getString("venue"), null);
-                        ft.add(R.id.main_container, historyCard);
+                        LatLng ll = new LatLng(sl.getDouble("lat"), sl.getDouble("lng"));
+                        HistoryCardFragment historyCard = HistoryCardFragment.newInstance(sl.getInt("amount"), sl.getString("venue"), ll);
+                        ft.add(R.id.scroll_main_container, historyCard);
                     }
 
                     ft.commit();
@@ -252,6 +254,10 @@ public class MainActivity extends Activity implements
                                         expenseHistory.setACL(dataPermission);
                                         expenseHistory.saveInBackground();
 
+                                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                        HistoryCardFragment historyCard = HistoryCardFragment.newInstance(count, currentVenueName, currentLocation);
+                                        ft.add(R.id.scroll_main_container, historyCard).commit();
+
                                         ll = null;
 
                                         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/count_back");
@@ -294,26 +300,6 @@ public class MainActivity extends Activity implements
                 // DataItem deleted
             }
         }
-    }
-
-    /**
-     * Initialises the mapview
-     */
-    private void createMapView() {
-        /*
-        try {
-            if(null == googleMap){
-                googleMap = ((MapFragment) getFragmentManager().findFragmentById(
-                        R.id.mapView)).getMap();
-
-                if(null == googleMap) {
-                    Toast.makeText(getApplicationContext(),
-                            "Error creating map", Toast.LENGTH_SHORT).show();
-                }
-            }
-        } catch (NullPointerException exception){
-            Log.e("mapApp", exception.toString());
-        }*/
     }
 
     @Override
