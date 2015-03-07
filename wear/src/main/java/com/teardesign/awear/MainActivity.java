@@ -75,6 +75,7 @@ public class MainActivity extends Activity implements
         setContentView(R.layout.activity_main);
 
         mDelayedView = (DelayedConfirmationView) findViewById(R.id.delayed_confirm);
+        mDelayedView.setTotalTimeMs(1500);
         mDelayedView.setListener(this);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -83,7 +84,13 @@ public class MainActivity extends Activity implements
                 .addApi(Wearable.API)
                 .build();
 
-        mGoogleApiClient.connect();
+        if (!mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.connect();
+        }
+        else {
+            mGoogleApiClient.disconnect();
+            mGoogleApiClient.connect();
+        }
 
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -96,13 +103,12 @@ public class MainActivity extends Activity implements
                 Date now = new Date();
                 long timeDifference = now.getTime() - lastUpdatedAt;
                 if (timeDifference > 3000) {
-                    worker.shutdown();
-                    ImageView tip = (ImageView) findViewById(R.id.tip);
-                    tip.setVisibility(GONE);
-                    mDelayedView.setTotalTimeMs(1500);
+                    //worker.shutdown();
+                    //ImageView tip = (ImageView) findViewById(R.id.tip);
+                    //tip.setVisibility(GONE);
                     mDelayedView.setVisibility(VISIBLE);
                     mDelayedView.start();
-                    sendNewAmount();
+                    //sendNewAmount();
                 } else {
                     worker.schedule(task, 1, TimeUnit.SECONDS);
                 }
@@ -152,11 +158,11 @@ public class MainActivity extends Activity implements
                                 scale.setBackgroundColor(Color.argb(255, 155, 203, 100));
                             }
 
-                            float futureY = currentY - scaleIncrease;
+                            float futureY = currentY - ( scaleIncrease );
 
                             ObjectAnimator anim = ObjectAnimator.ofFloat(scale, "Y", currentY, futureY);
                             currentY = futureY;
-                            anim.setDuration(1000);
+                            anim.setDuration(500);
                             anim.start();
                         }
 
@@ -177,34 +183,20 @@ public class MainActivity extends Activity implements
     // Create a data map and put data in it
     private void sendNewAmount() {
         PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/count");
-        putDataMapReq.getDataMap().putInt(COUNT_KEY, count++);
+        putDataMapReq.getDataMap().putInt(COUNT_KEY, count);
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
-        PendingResult<DataApi.DataItemResult> pendingResult =
-                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+        PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
 
-//        pendingResult.setResultCallback(new ResultCallback<DataApi.DataItemResult>() {
-//            @Override
-//            public void onResult(final DataApi.DataItemResult dataItemResult) {
-//                Log.d("RESULT", dataItemResult.toString());
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        TextView tv = (TextView) findViewById(R.id.text);
-//                        tv.setText(dataItemResult.toString());
-//                    }
-//                });
-//            }
-//        });
+        Intent intent = new Intent(this, ConfirmationActivity.class);
+        intent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, ConfirmationActivity.SUCCESS_ANIMATION);
+        intent.putExtra(ConfirmationActivity.EXTRA_MESSAGE, getString(R.string.msg_sent));
+        startActivity(intent);
     }
 
     @Override
     public void onTimerFinished(View view) {
-        Intent intent = new Intent(this, ConfirmationActivity.class);
-        intent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE,
-                ConfirmationActivity.SUCCESS_ANIMATION);
-        intent.putExtra(ConfirmationActivity.EXTRA_MESSAGE,
-                getString(R.string.msg_sent));
-        startActivity(intent);
+        worker.shutdown();
+        sendNewAmount();
     }
 
     @Override

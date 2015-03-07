@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:background="@android:color/white"
     android:id="@+id/box_square"
-    android:layout_height="match_parent" tools:context=".MainActivity" tools:deviceIds="wear_square">
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    tools:deviceIds="wear_square">
 
     <ImageView
         android:layout_width="match_parent"
@@ -19,24 +23,35 @@
         android:layout_marginTop="14dp"
         android:id="@+id/tip" />
 
-    <TextView android:id="@+id/text" android:layout_width="wrap_content"
+    <TextView android:id="@+id/text_saving"
+        android:layout_width="wrap_content"
         android:textColor="@android:color/black"
-        android:layout_height="wrap_content"
-        android:textSize="30dp"
+        android:textSize="25dp"
         android:textAlignment="center"
-        android:layout_gravity="center_horizontal|center_vertical"
-        android:text="@string/welcome_text" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:text="@string/saving_text"
+        android:visibility="gone"
+        android:layout_height="wrap_content" />
 
     <android.support.wearable.view.DelayedConfirmationView
         android:id="@+id/delayed_confirm"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/plus2"
+        android:src="@drawable/cancel_circle"
+        app:circle_border_color="@color/lightblue"
+        app:circle_border_width="4dp"
+        app:circle_radius="16dp">
+    </android.support.wearable.view.DelayedConfirmationView>-->
+
+    <TextView android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:textColor="@android:color/black"
+        android:layout_height="wrap_content"
+        android:textSize="30dp"
+        android:textAlignment="center"
         android:layout_gravity="center_horizontal|center_vertical"
-        tools:circle_border_color="@color/lightblue"
-        tools:circle_border_width="4dp"
-        tools:circle_radius="16dp">
-    </android.support.wearable.view.DelayedConfirmationView>
+        android:text="" />
 
 
 </FrameLayout>

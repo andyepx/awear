@@ -13,11 +13,10 @@
         android:id="@+id/delayed_confirm"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/plus2"
-        android:layout_gravity="center_horizontal|center_vertical"
-        tools:circle_border_color="@color/lightblue"
-        tools:circle_border_width="4dp"
-        tools:circle_radius="16dp">
+        android:src="@drawable/cancel_circle"
+        app:circle_border_color="@color/lightblue"
+        app:circle_border_width="4dp"
+        app:circle_radius="16dp">
     </android.support.wearable.view.DelayedConfirmationView>
 
     </android.support.wearable.view.WatchViewStub>

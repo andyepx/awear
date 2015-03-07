@@ -99,7 +99,7 @@ public class MainActivity extends Activity implements
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        mGoogleApiClient.connect();
+        //mGoogleApiClient.connect();
 
         try {
             categories = new FoursquareCategoriesList().execute(0).get();
