@@ -15,6 +15,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -120,6 +121,9 @@ public class MainActivity extends Activity implements
             startActivity(intent);
         }
 
+        Intent i = new Intent(this, MyService.class);
+        startService(i);
+
     }
 
     private void createHistoryCards() {
@@ -133,8 +137,8 @@ public class MainActivity extends Activity implements
 
                     for (ParseObject sl : scoreList) {
                         LatLng ll = new LatLng(sl.getDouble("lat"), sl.getDouble("lng"));
-                        HistoryCardFragment historyCard = HistoryCardFragment.newInstance(sl.getInt("amount"), sl.getString("venue"), ll);
-                        ft.add(R.id.scroll_main_container, historyCard);
+                        //HistoryCardFragment historyCard = HistoryCardFragment.newInstance(sl.getInt("amount"), sl.getString("venue"), ll);
+                        //ft.add(R.id.scroll_main_container, historyCard);
                     }
 
                     ft.commit();

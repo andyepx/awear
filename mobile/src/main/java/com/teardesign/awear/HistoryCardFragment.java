@@ -147,6 +147,7 @@ public class HistoryCardFragment extends Fragment implements OnMapReadyCallback 
     private void createMapView(View v) {
         FragmentManager fm = getChildFragmentManager();
         //MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.mapView);
+
         googleMap = ((MapFragment) fm.findFragmentById(R.id.mapView)).getMap();
         googleMap.setMyLocationEnabled(true);
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCoordinates, 20));
@@ -154,6 +155,7 @@ public class HistoryCardFragment extends Fragment implements OnMapReadyCallback 
         googleMap.addMarker(new MarkerOptions()
                 .title(mLocation)
                 .position(mCoordinates));
+
         //mapFragment.getMapAsync(this);
     }
 

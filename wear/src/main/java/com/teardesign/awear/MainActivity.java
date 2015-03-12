@@ -36,12 +36,16 @@ import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import java.nio.ByteBuffer;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -186,6 +190,35 @@ public class MainActivity extends Activity implements
         putDataMapReq.getDataMap().putInt(COUNT_KEY, count);
         PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
         PendingResult<DataApi.DataItemResult> pendingResult = Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+
+        final GoogleApiClient client = new GoogleApiClient.Builder(this)
+                .addApi(Wearable.API)
+                .build();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final String nodeId;
+                client.blockingConnect(1500, TimeUnit.MILLISECONDS);
+                NodeApi.GetConnectedNodesResult result =
+                        Wearable.NodeApi.getConnectedNodes(client).await();
+                List<Node> nodes = result.getNodes();
+                if (nodes.size() > 0) {
+                    nodeId = nodes.get(0).getId();
+                    if (nodeId != null) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                client.blockingConnect(1500, TimeUnit.MILLISECONDS);
+                                byte[] b = ByteBuffer.allocate(4).putInt(count).array();
+                                Wearable.MessageApi.sendMessage(client, nodeId, "COUNT", b);
+                                client.disconnect();
+                            }
+                        }).start();
+                    }
+                }
+                client.disconnect();
+            }
+        }).start();
 
         Intent intent = new Intent(this, ConfirmationActivity.class);
         intent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, ConfirmationActivity.SUCCESS_ANIMATION);
