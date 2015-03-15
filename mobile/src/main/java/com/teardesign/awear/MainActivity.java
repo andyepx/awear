@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,6 +19,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,7 +30,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,7 +77,12 @@ public class MainActivity extends Activity implements
         DataApi.DataListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        HistoryCardFragment.OnFragmentInteractionListener {
+        HistoryCardFragment.OnFragmentInteractionListener,
+        MainFragment.OnFragmentInteractionListener {
+
+    private String[] mTabsTitles;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerList;
 
     GoogleMap googleMap;
     Marker m;
@@ -83,6 +95,8 @@ public class MainActivity extends Activity implements
     private static final String COUNT_KEY = "com.teardesign.awear.count";
     private Category categories[];
     private LocationListener ll;
+    private CharSequence mTitle;
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,10 +127,48 @@ public class MainActivity extends Activity implements
         if (currentUser != null) {
             running = true;
             setContentView(R.layout.activity_main);
-            getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.string.expenses_title);
+
+            mTabsTitles = getResources().getStringArray(R.array.tabs_array);
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+            // Set the adapter for the list view
+            mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                    R.layout.drawer_list_item, mTabsTitles));
+            // Set the list's click listener
+            mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+            mTitle = getTitle();
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            mDrawerToggle = new ActionBarDrawerToggle(
+                    this,                  /* host Activity */
+                    mDrawerLayout,         /* DrawerLayout object */
+                    R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+                    R.string.drawer_close  /* "close drawer" description */
+            ) {
+
+                /** Called when a drawer has settled in a completely open state. */
+                public void onDrawerOpened(View drawerView) {
+                    super.onDrawerOpened(drawerView);
+                    getActionBar().setTitle(mTitle);
+                }
+            };
+
+            // Set the drawer toggle as the DrawerListener
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+
+            // Set the drawer toggle as the DrawerListener
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+            //getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.string.expenses_title);
             //createMapView();
             //addMarker();
-            createHistoryCards();
+
+
+            //createHistoryCards();
         } else {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
@@ -127,32 +179,70 @@ public class MainActivity extends Activity implements
 
     }
 
-    private void createHistoryCards() {
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("ExpenseHistory");
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> scoreList, com.parse.ParseException e) {
-                if (e == null) {
-
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-
-                    for (ParseObject sl : scoreList) {
-                        LatLng ll = new LatLng(sl.getDouble("lat"), sl.getDouble("lng"));
-                        HistoryCardFragment historyCard = HistoryCardFragment.newInstance(sl.getInt("amount"), sl.getString("venue"), ll);
-                        ft.add(R.id.scroll_main_container, historyCard);
-                    }
-
-                    ft.commit();
-
-                    Log.d("score", "Retrieved " + scoreList.size() + " scores");
-                } else {
-                    Log.d("score", "Error: " + e.getMessage());
-                }
-            }
-        });
-
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle your other action bar items...
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /* Called whenever we call invalidateOptionsMenu() */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+        //boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        //menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView parent, View view, int position, long id) {
+            selectItem(position);
+        }
+    }
+
+    /** Swaps fragments in the main content view */
+    private void selectItem(int position) {
+        // Create a new fragment and specify the planet to show based on position
+        Fragment fragment = new MainFragment();
+        Bundle args = new Bundle();
+
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.content_frame, fragment)
+                .commit();
+
+        // Highlight the selected item, update the title, and close the drawer
+        mDrawerList.setItemChecked(position, true);
+        setTitle(mTabsTitles[position]);
+        mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        mTitle = title;
+        getActionBar().setTitle(mTitle);
+    }
 
 
     @Override
@@ -165,7 +255,7 @@ public class MainActivity extends Activity implements
 
         if (currentUser != null && !running) {
             setContentView(R.layout.activity_main);
-            createHistoryCards();
+            //createHistoryCards();
             //createMapView();
             //addMarker();
         } else if (!running) {
@@ -315,6 +405,11 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+
+           if (uri.compareTo(Uri.parse("awear:historyfragment")) == 0) {
+               createHistoryCards();
+           }
+
 
     }
 

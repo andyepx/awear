@@ -1,68 +1,23 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:padding="10dp"
-    android:id="@+id/main_container"
-    android:orientation="vertical"
-    android:layout_height="match_parent">
+<android.support.v4.widget.DrawerLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/drawer_layout"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
 
-    <!--<android.support.v7.widget.CardView-->
-    <!--xmlns:card_view="http://schemas.android.com/apk/res-auto"-->
-    <!--android:id="@+id/card_view"-->
-    <!--android:layout_gravity="top"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="78dp"-->
-    <!--card_view:cardBackgroundColor="#3949AB"-->
-    <!--card_view:cardElevation="2sp"-->
-    <!--card_view:cardCornerRadius="4dp">-->
+    <!-- The main content view -->
+    <FrameLayout
+        android:id="@+id/content_frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-        <!--<GridLayout-->
-            <!--android:orientation="vertical"-->
-            <!--android:padding="5dp"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent">-->
+    <!-- The navigation drawer -->
+    <ListView android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:background="#111"/>
 
-            <!--<TextView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:textColor="@android:color/white"-->
-                <!--android:text="Waiting..."-->
-                <!--android:padding="5dp"-->
-                <!--android:textSize="20dp"-->
-                <!--android:id="@+id/count_value" />-->
-
-            <!--<TextView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:textColor="@android:color/white"-->
-                <!--android:text=""-->
-                <!--android:textSize="20dp"-->
-                <!--android:padding="5dp"-->
-                <!--android:id="@+id/location_value" />-->
-
-        <!--</GridLayout>-->
-
-    <!--</android.support.v7.widget.CardView>-->
-
-    <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textColor="#37474F"-->
-        <!--android:text="Expenses History"-->
-        <!--android:paddingTop="20dp"-->
-        <!--android:paddingBottom="20dp"-->
-        <!--android:paddingLeft="0dp"-->
-        <!--android:textSize="20dp"-->
-        <!--android:id="@+id/hisotry_title" />-->
-
-    <ScrollView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:id="@+id/scroll_main_container"></LinearLayout>
-        </ScrollView>
-
-</LinearLayout>
+</android.support.v4.widget.DrawerLayout>
