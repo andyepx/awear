@@ -94,11 +94,11 @@ public class MainActivity extends Activity implements
 
         currentUser = ParseUser.getCurrentUser();
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Wearable.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .addApi(Wearable.API)
+//                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+//                .build();
 
         //mGoogleApiClient.connect();
 
@@ -113,6 +113,7 @@ public class MainActivity extends Activity implements
         if (currentUser != null) {
             running = true;
             setContentView(R.layout.activity_main);
+            getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.string.expenses_title);
             //createMapView();
             //addMarker();
             createHistoryCards();
@@ -137,8 +138,8 @@ public class MainActivity extends Activity implements
 
                     for (ParseObject sl : scoreList) {
                         LatLng ll = new LatLng(sl.getDouble("lat"), sl.getDouble("lng"));
-                        //HistoryCardFragment historyCard = HistoryCardFragment.newInstance(sl.getInt("amount"), sl.getString("venue"), ll);
-                        //ft.add(R.id.scroll_main_container, historyCard);
+                        HistoryCardFragment historyCard = HistoryCardFragment.newInstance(sl.getInt("amount"), sl.getString("venue"), ll);
+                        ft.add(R.id.scroll_main_container, historyCard);
                     }
 
                     ft.commit();
@@ -160,7 +161,7 @@ public class MainActivity extends Activity implements
         super.onResume();
 
         currentUser = ParseUser.getCurrentUser();
-        mGoogleApiClient.connect();
+        //mGoogleApiClient.connect();
 
         if (currentUser != null && !running) {
             setContentView(R.layout.activity_main);
@@ -176,7 +177,8 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        Wearable.DataApi.addListener(mGoogleApiClient, this);
+
+        //Wearable.DataApi.addListener(mGoogleApiClient, this);
     }
 
     @Override
@@ -187,123 +189,123 @@ public class MainActivity extends Activity implements
     @Override
     protected void onPause() {
         super.onPause();
-        Wearable.DataApi.removeListener(mGoogleApiClient, this);
-        mGoogleApiClient.disconnect();
+//        Wearable.DataApi.removeListener(mGoogleApiClient, this);
+//        mGoogleApiClient.disconnect();
     }
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        for (DataEvent event : dataEvents) {
-            if (event.getType() == DataEvent.TYPE_CHANGED) {
-                // DataItem changed
-                DataItem item = event.getDataItem();
-                if (item.getUri().getPath().compareTo("/count") == 0) {
-                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-                    count = dataMap.getInt(COUNT_KEY);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            TextView tv = (TextView) findViewById(R.id.count_value);
-                            tv.setText("$"+Integer.toString(count)+" at ");
-                            final TextView ltv = (TextView) findViewById(R.id.location_value);
-                            ltv.setText("Locating...");
-
-                            ll = new LocationListener() {
-                                @Override
-                                public void onLocationChanged(Location location) {
-                                    LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                                    ltv.setText(Double.toString(currentLocation.latitude) + " , " + Double.toString(currentLocation.longitude));
-
-                                    try {
-
-                                        loadedVenues = new FoursquareAPIAccess().execute(currentLocation).get();
-                                        CompactVenue currentVenue = null;
-                                        String currentVenueName = "";
-
-                                        for (CompactVenue venue : loadedVenues) {
-                                            float distance = 0;
-                                            float[] results = new float[3];
-                                            Location.distanceBetween(currentLocation.latitude, currentLocation.longitude, venue.getLocation().getLat(), venue.getLocation().getLng(), results);
-                                            if (distance == 0) {
-                                                distance = results[0];
-                                                currentVenue = venue;
-                                            } else if (results[0] < distance) {
-                                                distance = results[0];
-                                                currentVenue = venue;
-                                            }
-                                        }
-
-                                        if (currentVenue != null) {
-                                            ltv.setText(currentVenue.getName());
-                                            currentVenueName = currentVenue.getName();
-                                        } else {
-                                            currentVenueName = "Undefined";
-                                        }
-
-                                        ParseObject expenseHistory = new ParseObject("ExpenseHistory");
-                                        expenseHistory.put("lat", currentLocation.latitude);
-                                        expenseHistory.put("lng", currentLocation.longitude);
-                                        expenseHistory.put("user", currentUser);
-                                        expenseHistory.put("amount", count);
-                                        expenseHistory.put("venue", currentVenueName);
-                                        if (currentVenue != null)
-                                            expenseHistory.put("FoursquareVenueID", currentVenue.getId());
-
-                                        ParseACL dataPermission = new ParseACL();
-                                        dataPermission.setPublicReadAccess(false);
-                                        dataPermission.setReadAccess(currentUser, true);
-                                        dataPermission.setPublicWriteAccess(false);
-                                        dataPermission.setWriteAccess(currentUser, true);
-
-                                        expenseHistory.setACL(dataPermission);
-                                        expenseHistory.saveInBackground();
-
-                                        FragmentTransaction ft = getFragmentManager().beginTransaction();
-                                        HistoryCardFragment historyCard = HistoryCardFragment.newInstance(count, currentVenueName, currentLocation);
-                                        ft.add(R.id.scroll_main_container, historyCard).commit();
-
-                                        ll = null;
-
-                                        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/count_back");
-                                        putDataMapReq.getDataMap().putString(COUNT_KEY, "Done");
-                                        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
-                                        PendingResult<DataApi.DataItemResult> pendingResult =
-                                                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
-
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    } catch (ExecutionException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                }
-
-                                @Override
-                                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                                }
-
-                                @Override
-                                public void onProviderEnabled(String provider) {
-
-                                }
-
-                                @Override
-                                public void onProviderDisabled(String provider) {
-
-                                }
-                            };
-
-                            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
-                            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, ll);
-                        }
-                    });
-                }
-            } else if (event.getType() == DataEvent.TYPE_DELETED) {
-                // DataItem deleted
-            }
-        }
+//        for (DataEvent event : dataEvents) {
+//            if (event.getType() == DataEvent.TYPE_CHANGED) {
+//                // DataItem changed
+//                DataItem item = event.getDataItem();
+//                if (item.getUri().getPath().compareTo("/count") == 0) {
+//                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
+//                    count = dataMap.getInt(COUNT_KEY);
+//                    runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            TextView tv = (TextView) findViewById(R.id.count_value);
+//                            tv.setText("$"+Integer.toString(count)+" at ");
+//                            final TextView ltv = (TextView) findViewById(R.id.location_value);
+//                            ltv.setText("Locating...");
+//
+//                            ll = new LocationListener() {
+//                                @Override
+//                                public void onLocationChanged(Location location) {
+//                                    LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+//                                    ltv.setText(Double.toString(currentLocation.latitude) + " , " + Double.toString(currentLocation.longitude));
+//
+//                                    try {
+//
+//                                        loadedVenues = new FoursquareAPIAccess().execute(currentLocation).get();
+//                                        CompactVenue currentVenue = null;
+//                                        String currentVenueName = "";
+//
+//                                        for (CompactVenue venue : loadedVenues) {
+//                                            float distance = 0;
+//                                            float[] results = new float[3];
+//                                            Location.distanceBetween(currentLocation.latitude, currentLocation.longitude, venue.getLocation().getLat(), venue.getLocation().getLng(), results);
+//                                            if (distance == 0) {
+//                                                distance = results[0];
+//                                                currentVenue = venue;
+//                                            } else if (results[0] < distance) {
+//                                                distance = results[0];
+//                                                currentVenue = venue;
+//                                            }
+//                                        }
+//
+//                                        if (currentVenue != null) {
+//                                            ltv.setText(currentVenue.getName());
+//                                            currentVenueName = currentVenue.getName();
+//                                        } else {
+//                                            currentVenueName = "Undefined";
+//                                        }
+//
+//                                        ParseObject expenseHistory = new ParseObject("ExpenseHistory");
+//                                        expenseHistory.put("lat", currentLocation.latitude);
+//                                        expenseHistory.put("lng", currentLocation.longitude);
+//                                        expenseHistory.put("user", currentUser);
+//                                        expenseHistory.put("amount", count);
+//                                        expenseHistory.put("venue", currentVenueName);
+//                                        if (currentVenue != null)
+//                                            expenseHistory.put("FoursquareVenueID", currentVenue.getId());
+//
+//                                        ParseACL dataPermission = new ParseACL();
+//                                        dataPermission.setPublicReadAccess(false);
+//                                        dataPermission.setReadAccess(currentUser, true);
+//                                        dataPermission.setPublicWriteAccess(false);
+//                                        dataPermission.setWriteAccess(currentUser, true);
+//
+//                                        expenseHistory.setACL(dataPermission);
+//                                        expenseHistory.saveInBackground();
+//
+//                                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+//                                        HistoryCardFragment historyCard = HistoryCardFragment.newInstance(count, currentVenueName, currentLocation);
+//                                        ft.add(R.id.scroll_main_container, historyCard).commit();
+//
+//                                        ll = null;
+//
+//                                        PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/count_back");
+//                                        putDataMapReq.getDataMap().putString(COUNT_KEY, "Done");
+//                                        PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+//                                        PendingResult<DataApi.DataItemResult> pendingResult =
+//                                                Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+//
+//                                    } catch (InterruptedException e) {
+//                                        e.printStackTrace();
+//                                    } catch (ExecutionException e) {
+//                                        e.printStackTrace();
+//                                    }
+//
+//                                }
+//
+//                                @Override
+//                                public void onStatusChanged(String provider, int status, Bundle extras) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onProviderEnabled(String provider) {
+//
+//                                }
+//
+//                                @Override
+//                                public void onProviderDisabled(String provider) {
+//
+//                                }
+//                            };
+//
+//                            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
+//                            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, ll);
+//                        }
+//                    });
+//                }
+//            } else if (event.getType() == DataEvent.TYPE_DELETED) {
+//                // DataItem deleted
+//            }
+//        }
     }
 
     @Override

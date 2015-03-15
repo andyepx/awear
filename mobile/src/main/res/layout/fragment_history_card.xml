@@ -31,11 +31,11 @@ android:layout_height="205dp">
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="120dp" />-->
 
-        <fragment
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:id="@+id/mapView"
-            android:name="com.google.android.gms.maps.MapFragment" />
+        <!--<fragment-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="120dp"-->
+            <!--android:id="@+id/mapView"-->
+            <!--android:name="com.google.android.gms.maps.MapFragment" />-->
 
         <TextView
             android:layout_width="match_parent"

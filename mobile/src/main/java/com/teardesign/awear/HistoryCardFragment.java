@@ -148,13 +148,13 @@ public class HistoryCardFragment extends Fragment implements OnMapReadyCallback 
         FragmentManager fm = getChildFragmentManager();
         //MapFragment mapFragment = (MapFragment) fm.findFragmentById(R.id.mapView);
 
-        googleMap = ((MapFragment) fm.findFragmentById(R.id.mapView)).getMap();
-        googleMap.setMyLocationEnabled(true);
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCoordinates, 20));
-
-        googleMap.addMarker(new MarkerOptions()
-                .title(mLocation)
-                .position(mCoordinates));
+//        googleMap = ((MapFragment) fm.findFragmentById(R.id.mapView)).getMap();
+//        googleMap.setMyLocationEnabled(true);
+//        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCoordinates, 20));
+//
+//        googleMap.addMarker(new MarkerOptions()
+//                .title(mLocation)
+//                .position(mCoordinates));
 
         //mapFragment.getMapAsync(this);
     }
