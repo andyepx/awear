@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.FindCallback;
 import com.parse.ParseObject;
@@ -50,6 +52,13 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
         createHistoryCards(v);
+
+        Tracker t = ((AwearApp) getActivity().getApplication()).getTracker(
+                AwearApp.TrackerName.APP_TRACKER);
+
+        t.setScreenName("com.teardesign.awear.HomeFragment");
+        t.send(new HitBuilders.ScreenViewBuilder().build());
+
         return v;
     }
 

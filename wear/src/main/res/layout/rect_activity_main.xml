@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:background="@android:color/white"
-    android:id="@+id/box_square"
+    android:id="@+id/box_round"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     tools:deviceIds="wear_square">
@@ -23,17 +23,6 @@
         android:layout_marginTop="14dp"
         android:id="@+id/tip" />
 
-    <TextView android:id="@+id/text_saving"
-        android:layout_width="wrap_content"
-        android:textColor="@android:color/black"
-        android:textSize="25dp"
-        android:textAlignment="center"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="24dp"
-        android:text="@string/saving_text"
-        android:visibility="gone"
-        android:layout_height="wrap_content" />
-
     <android.support.wearable.view.DelayedConfirmationView
         android:id="@+id/delayed_confirm"
         android:layout_width="40dp"
@@ -41,8 +30,9 @@
         android:src="@drawable/cancel_circle"
         app:circle_border_color="@color/lightblue"
         app:circle_border_width="4dp"
+        android:layout_gravity="center_horizontal|center_vertical"
         app:circle_radius="16dp">
-    </android.support.wearable.view.DelayedConfirmationView>-->
+    </android.support.wearable.view.DelayedConfirmationView>
 
     <TextView android:id="@+id/text"
         android:layout_width="wrap_content"
@@ -52,6 +42,5 @@
         android:textAlignment="center"
         android:layout_gravity="center_horizontal|center_vertical"
         android:text="" />
-
 
 </FrameLayout>

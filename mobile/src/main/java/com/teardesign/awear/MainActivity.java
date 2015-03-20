@@ -37,6 +37,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -64,6 +66,7 @@ import java.lang.reflect.Array;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -78,7 +81,9 @@ public class MainActivity extends Activity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         HistoryCardFragment.OnFragmentInteractionListener,
-        MainFragment.OnFragmentInteractionListener {
+        MainFragment.OnFragmentInteractionListener,
+        HomeFragment.OnFragmentInteractionListener,
+        SettingsFragment.OnFragmentInteractionListener {
 
     private String[] mTabsTitles;
     private DrawerLayout mDrawerLayout;
@@ -169,6 +174,16 @@ public class MainActivity extends Activity implements
 
 
             //createHistoryCards();
+
+            Fragment fragment = new HomeFragment();
+            Bundle args = new Bundle();
+
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .commit();
+
+
         } else {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
@@ -222,15 +237,32 @@ public class MainActivity extends Activity implements
 
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
-        // Create a new fragment and specify the planet to show based on position
-        Fragment fragment = new MainFragment();
-        Bundle args = new Bundle();
 
-        // Insert the fragment by replacing any existing fragment
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.content_frame, fragment)
-                .commit();
+        if (position == 0) {
+            Fragment fragment = new HomeFragment();
+            Bundle args = new Bundle();
+
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .commit();
+        } else if (position == 1) {
+            Fragment fragment = new MainFragment();
+            Bundle args = new Bundle();
+
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .commit();
+        } else if (position == 2) {
+            Fragment fragment = new SettingsFragment();
+            Bundle args = new Bundle();
+
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .commit();
+        }
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
@@ -405,11 +437,6 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
-           if (uri.compareTo(Uri.parse("awear:historyfragment")) == 0) {
-               createHistoryCards();
-           }
-
 
     }
 
