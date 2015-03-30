@@ -41,6 +41,17 @@ android:layout_height="205dp">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
+            android:text="aaa"
+            android:textSize="10dp"
+            android:layout_gravity="right"
+            android:gravity="right"
+            android:padding="5dp"
+            android:id="@+id/history_date_value" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/white"
             android:text="$$$"
             android:padding="5dp"
             android:textSize="20dp"

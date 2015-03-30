@@ -4,9 +4,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#fff"
-        android:textSize="20sp"
+        android:textSize="20dp"
+        android:text="Some Text"
         android:gravity="center_vertical"
-        android:paddingStart="14.5sp"
-        android:paddingEnd="14.5sp"
-        android:minHeight="35sp"
+        android:padding="20dp"
         />

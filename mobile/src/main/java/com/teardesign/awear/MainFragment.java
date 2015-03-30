@@ -5,6 +5,7 @@ import android.app.FragmentTransaction;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 
 /**
@@ -53,11 +55,10 @@ public class MainFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_main, container, false);
         createHistoryCards(v);
 
-        Tracker t = ((AwearApp) getActivity().getApplication()).getTracker(
-                AwearApp.TrackerName.APP_TRACKER);
+        //Tracker t = ((AwearApp) getActivity().getApplication()).getTracker(AwearApp.TrackerName.APP_TRACKER);
 
-        t.setScreenName("com.teardesign.awear.HomeFragment");
-        t.send(new HitBuilders.ScreenViewBuilder().build());
+        //t.setScreenName("com.teardesign.awear.HomeFragment");
+        //t.send(new HitBuilders.ScreenViewBuilder().build());
 
         return v;
     }
@@ -76,19 +77,23 @@ public class MainFragment extends Fragment {
     private void createHistoryCards(View v) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ExpenseHistory");
+        query.orderByDescending("createdAt");
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> scoreList, com.parse.ParseException e) {
                 if (e == null) {
 
-                    FragmentTransaction ft = getFragmentManager().beginTransaction();
-
+                    int a = 0;
                     for (ParseObject sl : scoreList) {
-                        LatLng ll = new LatLng(sl.getDouble("lat"), sl.getDouble("lng"));
-                        HistoryCardFragment historyCard = HistoryCardFragment.newInstance(sl.getInt("amount"), sl.getString("venue"), ll);
-                        ft.add(R.id.scroll_main_container, historyCard);
-                    }
 
-                    ft.commit();
+                        LatLng ll = new LatLng(sl.getDouble("lat"), sl.getDouble("lng"));
+
+                        HistoryCardFragment hcf = new HistoryCardFragment().newInstance(sl.getInt("amount"), sl.getString("venue"), DateFormat.format("dd/MM/yyyy HH:mm", sl.getCreatedAt()).toString(), ll);
+                        getChildFragmentManager().beginTransaction().add(
+                                R.id.scroll_main_container,
+                                hcf,
+                                "HistoryFragment_"+String.valueOf(a)).commit();
+
+                    }
 
                     Log.d("score", "Retrieved " + scoreList.size() + " scores");
                 } else {

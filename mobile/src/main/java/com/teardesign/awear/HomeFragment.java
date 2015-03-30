@@ -79,7 +79,6 @@ public class HomeFragment extends Fragment {
                         Calendar d = Calendar.getInstance();
                         d.setTime(sl.getCreatedAt());
 
-
                         if (c.get(Calendar.ERA) == d.get(Calendar.ERA) &&
                             c.get(Calendar.YEAR) == d.get(Calendar.YEAR) &&
                             c.get(Calendar.DAY_OF_YEAR) == d.get(Calendar.DAY_OF_YEAR)) {
@@ -93,10 +92,16 @@ public class HomeFragment extends Fragment {
                     }
 
                     TextView tv = (TextView) v.findViewById(R.id.todayAmount);
+                    TextView tvLabel = (TextView) v.findViewById(R.id.todayExpensiveLabel);
                     tv.setText("$ "+String.valueOf(todayAmounts[0]));
 
                     TextView tvLocation = (TextView) v.findViewById(R.id.todayExpensive);
-                    tvLocation.setText(todayExpensiveLocation[0].getString("venue") + String.valueOf(todayExpensiveLocation[0].getInt("amount")));
+                    if (todayExpensiveLocation[0] != null) {
+                        tvLocation.setText(todayExpensiveLocation[0].getString("venue") + String.valueOf(todayExpensiveLocation[0].getInt("amount")));
+                    } else {
+                        tvLocation.setVisibility(View.GONE);
+                        tvLabel.setVisibility(View.GONE);
+                    }
 
                     Log.d("score", "Retrieved " + scoreList.size() + " scores");
                 } else {

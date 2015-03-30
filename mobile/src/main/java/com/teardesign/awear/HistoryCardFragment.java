@@ -33,9 +33,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
  */
 public class HistoryCardFragment extends Fragment implements OnMapReadyCallback {
 
-    private static int mAmount;
-    private static String mLocation;
-    private static LatLng mCoordinates;
+    private int mAmount;
+    private String mLocation;
+    private String mDate;
+    private LatLng mCoordinates;
 
     GoogleMap googleMap;
 
@@ -51,14 +52,15 @@ public class HistoryCardFragment extends Fragment implements OnMapReadyCallback 
      * @param coordinates Parameter 2.
      * @return A new instance of fragment HistoryCardFragment.
      */
-    public static HistoryCardFragment newInstance(int amount, String location, LatLng coordinates) {
-        HistoryCardFragment fragment = new HistoryCardFragment();
+    public HistoryCardFragment newInstance(int amount, String location, String date, LatLng coordinates) {
+       // HistoryCardFragment fragment = new HistoryCardFragment();
 
         mAmount = amount;
         mLocation = location;
+        mDate = date;
         mCoordinates = coordinates;
 
-        return fragment;
+        return this;
     }
 
     public HistoryCardFragment() {
@@ -78,6 +80,9 @@ public class HistoryCardFragment extends Fragment implements OnMapReadyCallback 
         View v = inflater.inflate(R.layout.fragment_history_card, container, false);
 
         createMapView(v);
+
+        TextView dateHistory = (TextView) v.findViewById(R.id.history_date_value);
+        dateHistory.setText(mDate);
 
         TextView amountHistory = (TextView) v.findViewById(R.id.history_count_value);
         amountHistory.setText("$"+Integer.toString(mAmount)+" at ");
