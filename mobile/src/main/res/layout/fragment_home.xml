@@ -32,6 +32,25 @@
         android:textSize="25dp"
         android:text="Your expenses today" />
 
+    <com.teardesign.awear.DonutProgressAwear
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:layout_gravity="center"
+        android:id="@+id/today_expenses"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        custom:donut_unfinished_stroke_width="15dp"
+        custom:donut_finished_stroke_width="15dp"
+        custom:donut_progress="0"
+        custom:donut_prefix_text="$ "
+        custom:donut_suffix_text=""
+        custom:donut_inner_bottom_text_size="10dp"
+        custom:donut_text_color="@color/primaryColorDark"
+        custom:donut_finished_color="@color/primaryColor"
+        custom:donut_inner_bottom_text_color="#fff" />
+
+    <!--
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -47,6 +66,7 @@
         android:layout_marginRight="0dp"
         android:layout_marginLeft="0dp"
         android:background="@android:color/darker_gray"/>
+    -->
 
     <TextView
         android:layout_width="match_parent"
@@ -60,8 +80,5 @@
         android:id="@+id/todayExpensive"
         android:paddingTop="10dp"
         android:textSize="20dp" />
-
-
-
 </LinearLayout>
 

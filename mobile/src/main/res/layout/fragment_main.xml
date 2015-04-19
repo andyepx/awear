@@ -1,18 +1,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:padding="10dp"
     android:id="@+id/main_container"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="0dp"
+    android:paddingBottom="0dp"
     android:orientation="vertical"
     android:layout_height="match_parent">
 
     <ScrollView
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layout_margin="0dp"
+            android:padding="0dp"
             android:id="@+id/scroll_main_container"></LinearLayout>
     </ScrollView>
 

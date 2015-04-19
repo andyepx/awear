@@ -58,7 +58,7 @@ public class DataLayerListenerService extends WearableListenerService {
     @Override
     public void onMessageReceived(MessageEvent messageEvent) {
 
-        showToast(messageEvent.getPath());
+        //showToast(messageEvent.getPath());
 
         byte[] b = messageEvent.getData();
         ByteBuffer wrapped = ByteBuffer.wrap(b); // big-endian by default
@@ -118,7 +118,7 @@ public class DataLayerListenerService extends WearableListenerService {
                     locationManager.removeUpdates(ll);
                     ll = null;
 
-                    showToast(Integer.toString(newValue) + " at " + currentVenueName);
+                    showToast("$"+Integer.toString(newValue) + " at " + currentVenueName);
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();

@@ -72,15 +72,14 @@ public class MainActivity extends Activity implements
     private Runnable task;
 
     private DelayedConfirmationView mDelayedView;
+    private ImageView mTip;
+
+    private DelayedConfirmationListener mDcl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mDelayedView = (DelayedConfirmationView) findViewById(R.id.delayed_confirm);
-        mDelayedView.setTotalTimeMs(1500);
-        mDelayedView.setListener(this);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -102,23 +101,7 @@ public class MainActivity extends Activity implements
         scaleIncrease = size.y / 10;
         //scaleIncrease = 1 / 20;
 
-        task = new Runnable() {
-            public void run() {
-                Date now = new Date();
-                long timeDifference = now.getTime() - lastUpdatedAt;
-                if (timeDifference > 3000) {
-                    //worker.shutdown();
-                    //ImageView tip = (ImageView) findViewById(R.id.tip);
-                    //tip.setVisibility(GONE);
-                    mDelayedView.setVisibility(VISIBLE);
-                    mDelayedView.start();
-                    //sendNewAmount();
-                } else {
-                    worker.schedule(task, 1, TimeUnit.SECONDS);
-                }
-            }
-        };
-
+        mDcl = this;
 
         final WatchViewStub stub = (WatchViewStub) findViewById(R.id.watch_view_stub);
         stub.setOnLayoutInflatedListener(new WatchViewStub.OnLayoutInflatedListener() {
@@ -127,18 +110,42 @@ public class MainActivity extends Activity implements
 
                 Animation rotate = AnimationUtils.loadAnimation(stub.getContext(), R.anim.rotate);
 
-                ImageView tip = (ImageView) findViewById(R.id.tip);
                 final ImageView scale = (ImageView) findViewById(R.id.scale);
 
                 Display display = getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
 
+                mDelayedView = (DelayedConfirmationView) findViewById(R.id.delayed_confirm);
+                mDelayedView.setTotalTimeMs(1500);
+                mDelayedView.setListener(mDcl);
+                //mDelayedView.setVisibility(INVISIBLE);
+
+                mTip = (ImageView) findViewById(R.id.tip);
+
+                task = new Runnable() {
+                    public void run() {
+                        Date now = new Date();
+                        long timeDifference = now.getTime() - lastUpdatedAt;
+                        if (timeDifference > 3000) {
+                            //worker.shutdown();
+
+                            //mTip.setVisibility(GONE);
+
+                            //mDelayedView.setVisibility(VISIBLE);
+                            mDelayedView.start();
+                            //sendNewAmount();
+                        } else {
+                            worker.schedule(task, 1, TimeUnit.SECONDS);
+                        }
+                    }
+                };
+
                 scale.setY(size.y);
                 currentY = size.y;
 
-                tip.setClickable(true);
-                tip.setOnClickListener(new View.OnClickListener() {
+                mTip.setClickable(true);
+                mTip.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
@@ -214,6 +221,8 @@ public class MainActivity extends Activity implements
                                 client.disconnect();
                             }
                         }).start();
+
+                        mTip.setVisibility(VISIBLE);
                     }
                 }
                 client.disconnect();

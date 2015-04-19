@@ -21,6 +21,8 @@ import com.parse.ParseUser;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -91,17 +93,37 @@ public class HomeFragment extends Fragment {
                         }
                     }
 
-                    TextView tv = (TextView) v.findViewById(R.id.todayAmount);
-                    TextView tvLabel = (TextView) v.findViewById(R.id.todayExpensiveLabel);
-                    tv.setText("$ "+String.valueOf(todayAmounts[0]));
+                    //TextView tv = (TextView) v.findViewById(R.id.todayAmount);
+                    //TextView tvLabel = (TextView) v.findViewById(R.id.todayExpensiveLabel);
+                    //tv.setText("$ "+String.valueOf(todayAmounts[0]));
 
                     TextView tvLocation = (TextView) v.findViewById(R.id.todayExpensive);
                     if (todayExpensiveLocation[0] != null) {
-                        tvLocation.setText(todayExpensiveLocation[0].getString("venue") + String.valueOf(todayExpensiveLocation[0].getInt("amount")));
+                        //+ String.valueOf(todayExpensiveLocation[0].getInt("amount"))
+                        tvLocation.setText(todayExpensiveLocation[0].getString("venue"));
                     } else {
                         tvLocation.setVisibility(View.GONE);
-                        tvLabel.setVisibility(View.GONE);
                     }
+
+                    final DonutProgressAwear dp = (DonutProgressAwear) v.findViewById(R.id.today_expenses);
+                    final int amountBar = 5 * todayAmounts[0];
+
+                    final Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (dp.getProgress() < amountBar) {
+                                        dp.setProgress(dp.getProgress() + 1);
+                                    } else {
+                                        timer.cancel();
+                                    }
+                                }
+                            });
+                        }
+                    }, 1000, 20);
 
                     Log.d("score", "Retrieved " + scoreList.size() + " scores");
                 } else {

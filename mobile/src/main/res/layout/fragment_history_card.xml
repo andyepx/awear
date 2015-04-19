@@ -3,17 +3,18 @@ xmlns:card_view="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:orientation="vertical"
+    android:layout_marginTop="10dp"
 tools:context="com.teardesign.awear.HistoryCardFragment"
-android:layout_height="205dp">
+android:layout_height="115dp">
 
 <android.support.v7.widget.CardView
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card_view"
     android:layout_gravity="top"
     android:layout_width="match_parent"
-    android:layout_height="198dp"
+    android:layout_height="match_parent"
     android:padding="0dp"
-    card_view:cardBackgroundColor="#1E88E5"
+    card_view:cardBackgroundColor="#7CB342"
     card_view:contentPadding="0dp"
     card_view:cardUseCompatPadding="false"
     card_view:cardPreventCornerOverlap="false"
@@ -22,7 +23,7 @@ android:layout_height="205dp">
 
     <GridLayout
         android:orientation="vertical"
-        android:padding="5dp"
+        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -41,7 +42,7 @@ android:layout_height="205dp">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:text="aaa"
+            android:text="Date"
             android:textSize="10dp"
             android:layout_gravity="right"
             android:gravity="right"
@@ -52,7 +53,7 @@ android:layout_height="205dp">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:text="$$$"
+            android:text="$"
             android:padding="5dp"
             android:textSize="20dp"
             android:id="@+id/history_count_value" />
@@ -61,7 +62,7 @@ android:layout_height="205dp">
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@android:color/white"
-            android:text=""
+            android:text="Location"
             android:textSize="20dp"
             android:padding="5dp"
             android:id="@+id/history_location_value" />

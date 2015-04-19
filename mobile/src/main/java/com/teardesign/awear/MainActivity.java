@@ -107,90 +107,10 @@ public class MainActivity extends Activity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, Secrets.parseAppID, Secrets.parseAppSecret);
-
-        currentUser = ParseUser.getCurrentUser();
-
-//        mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                .addApi(Wearable.API)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
-//                .build();
-
-        //mGoogleApiClient.connect();
-
-        try {
-            categories = new FoursquareCategoriesList().execute(0).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        if (currentUser != null) {
-            running = true;
-            setContentView(R.layout.activity_main);
-
-            mTabsTitles = getResources().getStringArray(R.array.tabs_array);
-            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-            mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-            // Set the adapter for the list view
-            mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                    R.layout.drawer_list_item, mTabsTitles));
-            // Set the list's click listener
-            mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-
-            mTitle = getTitle();
-            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-            mDrawerToggle = new ActionBarDrawerToggle(
-                    this,                  /* host Activity */
-                    mDrawerLayout,         /* DrawerLayout object */
-                    R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
-                    R.string.drawer_close  /* "close drawer" description */
-            ) {
-
-                /** Called when a drawer has settled in a completely open state. */
-                public void onDrawerOpened(View drawerView) {
-                    super.onDrawerOpened(drawerView);
-                    getActionBar().setTitle(mTitle);
-                }
-            };
-
-            // Set the drawer toggle as the DrawerListener
-            mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-            getActionBar().setHomeButtonEnabled(true);
-
-            // Set the drawer toggle as the DrawerListener
-            mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-            //getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.string.expenses_title);
-            //createMapView();
-            //addMarker();
-
-
-            //createHistoryCards();
-
-            Fragment fragment = new HomeFragment();
-            Bundle args = new Bundle();
-
-            FragmentManager fragmentManager = getFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame, fragment)
-                    .commit();
-
-
-        } else {
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
-        }
-
         Intent i = new Intent(this, MyService.class);
         startService(i);
+
+        setup();
 
     }
 
@@ -282,15 +202,75 @@ public class MainActivity extends Activity implements
 
         super.onResume();
 
-        currentUser = ParseUser.getCurrentUser();
-        //mGoogleApiClient.connect();
+        setup();
 
-        if (currentUser != null && !running) {
+    }
+
+    private void setup() {
+
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this, Secrets.parseAppID, Secrets.parseAppSecret);
+
+        currentUser = ParseUser.getCurrentUser();
+
+        try {
+            categories = new FoursquareCategoriesList().execute(0).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        if (currentUser != null) {
+            running = true;
             setContentView(R.layout.activity_main);
-            //createHistoryCards();
-            //createMapView();
-            //addMarker();
-        } else if (!running) {
+
+            mTabsTitles = getResources().getStringArray(R.array.tabs_array);
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+            // Set the adapter for the list view
+            mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                    R.layout.drawer_list_item, mTabsTitles));
+            // Set the list's click listener
+            mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+            mTitle = getTitle();
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+            mDrawerToggle = new ActionBarDrawerToggle(
+                    this,                  /* host Activity */
+                    mDrawerLayout,         /* DrawerLayout object */
+                    R.drawable.ic_drawer,  /* nav drawer icon to replace 'Up' caret */
+                    R.string.drawer_close  /* "close drawer" description */
+            ) {
+
+                /** Called when a drawer has settled in a completely open state. */
+                public void onDrawerOpened(View drawerView) {
+                    super.onDrawerOpened(drawerView);
+                    getActionBar().setTitle(mTitle);
+                }
+            };
+
+            // Set the drawer toggle as the DrawerListener
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setHomeButtonEnabled(true);
+
+            // Set the drawer toggle as the DrawerListener
+            mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+            Fragment fragment = new HomeFragment();
+            Bundle args = new Bundle();
+
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_frame, fragment)
+                    .commit();
+
+
+        } else {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);
         }

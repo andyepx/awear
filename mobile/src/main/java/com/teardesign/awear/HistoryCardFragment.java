@@ -2,10 +2,12 @@ package com.teardesign.awear;
 
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,7 +90,24 @@ public class HistoryCardFragment extends Fragment implements OnMapReadyCallback 
         amountHistory.setText("$"+Integer.toString(mAmount)+" at ");
 
         TextView locationHistory = (TextView) v.findViewById(R.id.history_location_value);
-        locationHistory.setText(mLocation);
+        String loc = mLocation;
+        if (loc.length() > 30) {
+            loc = loc.substring(0, 28) + "...";
+        }
+        locationHistory.setText(loc);
+
+        CardView cv = (CardView) v.findViewById(R.id.card_view);
+        cv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(getActivity(), ExpenseDetailsActivity.class);
+                startActivity(intent);
+
+                //Toast.makeText(v.getContext(), mLocation, Toast.LENGTH_LONG).show();
+
+            }
+        });
 
         return v;
     }
