@@ -72,8 +72,11 @@ public class DataLayerListenerService extends WearableListenerService {
                 LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
                 try {
+                    FoursquareParams p = new FoursquareParams();
+                    p.distance = 80;
+                    p.location = currentLocation;
 
-                    loadedVenues = new FoursquareAPIAccess().execute(currentLocation).get();
+                    loadedVenues = new FoursquareAPIAccess().execute(p).get();
                     CompactVenue currentVenue = null;
                     String currentVenueName = "";
 
@@ -152,39 +155,6 @@ public class DataLayerListenerService extends WearableListenerService {
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-    }
-
-    private class FoursquareAPIAccess extends AsyncTask<LatLng, Integer, CompactVenue[]> {
-        protected CompactVenue[] doInBackground(LatLng... currentLocation) {
-
-            try {
-                return searchVenues(Double.toString(currentLocation[0].latitude) + "," + Double.toString(currentLocation[0].longitude));
-            } catch (FoursquareApiException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        public CompactVenue[] searchVenues(String ll) throws FoursquareApiException {
-
-            // First we need a initialize FoursquareApi.
-            FoursquareApi foursquareApi = new FoursquareApi(Secrets.fourSquareClientID, Secrets.fourSquareClientSecret, "");
-
-            // After client has been initialized we can make queries.
-            Result<VenuesSearchResult> result = foursquareApi.venuesSearch(ll, null, null, null, null, null, "browse", "4d4b7105d754a06374d81259,4d4b7105d754a06378d81259", null, null, null, 80, null);
-
-            if (result.getMeta().getCode() == 200) {
-                return result.getResult().getVenues();
-            } else {
-                System.out.println("Error occured: ");
-                System.out.println("  code: " + result.getMeta().getCode());
-                System.out.println("  type: " + result.getMeta().getErrorType());
-                System.out.println("  detail: " + result.getMeta().getErrorDetail());
-            }
-
-            return null;
-        }
     }
 
 

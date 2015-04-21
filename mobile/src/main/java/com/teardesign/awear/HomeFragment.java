@@ -109,21 +109,29 @@ public class HomeFragment extends Fragment {
                     final int amountBar = 5 * todayAmounts[0];
 
                     final Timer timer = new Timer();
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (dp.getProgress() < amountBar) {
-                                        dp.setProgress(dp.getProgress() + 1);
-                                    } else {
-                                        timer.cancel();
-                                    }
+
+                        timer.schedule(new TimerTask() {
+                            @Override
+                            public void run() {
+
+                                try {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (dp.getProgress() < amountBar) {
+                                                dp.setProgress(dp.getProgress() + 1);
+                                            } else {
+                                                timer.cancel();
+                                            }
+                                        }
+                                    });
+                                } catch (RuntimeException re) {
+                                    Log.d("INIT", "Couldnt init the wheel!");
+                                    timer.cancel();
                                 }
-                            });
-                        }
-                    }, 1000, 20);
+                            }
+                        }, 1500, 20);
+
 
                     Log.d("score", "Retrieved " + scoreList.size() + " scores");
                 } else {

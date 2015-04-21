@@ -39,6 +39,7 @@ public class HistoryCardFragment extends Fragment implements OnMapReadyCallback 
     private String mLocation;
     private String mDate;
     private LatLng mCoordinates;
+    private String mId;
 
     GoogleMap googleMap;
 
@@ -54,13 +55,14 @@ public class HistoryCardFragment extends Fragment implements OnMapReadyCallback 
      * @param coordinates Parameter 2.
      * @return A new instance of fragment HistoryCardFragment.
      */
-    public HistoryCardFragment newInstance(int amount, String location, String date, LatLng coordinates) {
+    public HistoryCardFragment newInstance(int amount, String location, String date, LatLng coordinates, String id) {
        // HistoryCardFragment fragment = new HistoryCardFragment();
 
         mAmount = amount;
         mLocation = location;
         mDate = date;
         mCoordinates = coordinates;
+        mId = id;
 
         return this;
     }
@@ -102,6 +104,7 @@ public class HistoryCardFragment extends Fragment implements OnMapReadyCallback 
             public void onClick(View v) {
 
                 Intent intent = new Intent(getActivity(), ExpenseDetailsActivity.class);
+                intent.putExtra("ID", mId);
                 startActivity(intent);
 
                 //Toast.makeText(v.getContext(), mLocation, Toast.LENGTH_LONG).show();

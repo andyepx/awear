@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,8 @@ import com.parse.FindCallback;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -79,15 +82,44 @@ public class MainFragment extends Fragment {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("ExpenseHistory");
         query.orderByDescending("createdAt");
         query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> scoreList, com.parse.ParseException e) {
+            public void done(List<ParseObject> expensesList, com.parse.ParseException e) {
                 if (e == null) {
 
+                    String text = "";
+                    String previousText = "-";
+                    Calendar c = Calendar.getInstance();
+                    c.add(Calendar.DAY_OF_YEAR, -1); // yesterday
+
                     int a = 0;
-                    for (ParseObject sl : scoreList) {
+                    for (ParseObject sl : expensesList) {
+
+                        Calendar c2 = Calendar.getInstance();
+                        c2.setTime(sl.getCreatedAt()); // your date
+
+                        if (DateUtils.isToday(sl.getCreatedAt().getTime())) {
+                            text = "Today";
+                        } else if (c.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
+                                && c.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR)) {
+                            text = "Yesterday";
+                        } else {
+                            text = DateFormat.format("dd MMMM yyyy", sl.getCreatedAt()).toString();
+                        }
+
+                        TextView tv = new TextView(getActivity());
+                        tv.setText(text);
+
+                        if (previousText.compareTo(text) != 0) {
+                            previousText = text;
+                            HistoryCardLabelFragment hclf = new HistoryCardLabelFragment().newInstance(text);
+                            getChildFragmentManager().beginTransaction().add(
+                                    R.id.scroll_main_container,
+                                    hclf,
+                                    "HistoryLabel_"+String.valueOf(a)).commit();
+                        }
 
                         LatLng ll = new LatLng(sl.getDouble("lat"), sl.getDouble("lng"));
 
-                        HistoryCardFragment hcf = new HistoryCardFragment().newInstance(sl.getInt("amount"), sl.getString("venue"), DateFormat.format("dd/MM/yyyy HH:mm", sl.getCreatedAt()).toString(), ll);
+                        HistoryCardFragment hcf = new HistoryCardFragment().newInstance(sl.getInt("amount"), sl.getString("venue"), DateFormat.format("dd/MM/yyyy HH:mm", sl.getCreatedAt()).toString(), ll, sl.getObjectId());
                         getChildFragmentManager().beginTransaction().add(
                                 R.id.scroll_main_container,
                                 hcf,
@@ -95,7 +127,7 @@ public class MainFragment extends Fragment {
 
                     }
 
-                    Log.d("score", "Retrieved " + scoreList.size() + " scores");
+                    Log.d("score", "Retrieved " + expensesList.size() + " records");
                 } else {
                     Log.d("score", "Error: " + e.getMessage());
                 }

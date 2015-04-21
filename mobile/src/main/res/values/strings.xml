@@ -8,7 +8,7 @@
     <string name="expenses_title">Expenses History</string>
     <string name="drawer_close">Close</string>
     <string name="drawer_open">Open</string>
-    <string name="title_activity_expense_details">ExpenseDetailsActivity</string>
+    <string name="title_activity_expense_details">Expense Details</string>
 
     <string name="hello_world">Hello world!</string>
 

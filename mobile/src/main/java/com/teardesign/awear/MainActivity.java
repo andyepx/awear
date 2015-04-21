@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PersistableBundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -83,7 +84,8 @@ public class MainActivity extends Activity implements
         HistoryCardFragment.OnFragmentInteractionListener,
         MainFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener,
-        SettingsFragment.OnFragmentInteractionListener {
+        SettingsFragment.OnFragmentInteractionListener,
+        HistoryCardLabelFragment.OnFragmentInteractionListener {
 
     private String[] mTabsTitles;
     private DrawerLayout mDrawerLayout;
@@ -102,6 +104,7 @@ public class MainActivity extends Activity implements
     private LocationListener ll;
     private CharSequence mTitle;
     private ActionBarDrawerToggle mDrawerToggle;
+    private int mCurrentPosition = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +114,11 @@ public class MainActivity extends Activity implements
         startService(i);
 
         setup();
+
+//        if (savedInstanceState != null)
+//            mCurrentPosition = (int) savedInstanceState.getSerializable("currentPosition");
+
+        Log.d("STATE!", "Create..." + String.valueOf(mCurrentPosition));
 
     }
 
@@ -188,6 +196,8 @@ public class MainActivity extends Activity implements
         mDrawerList.setItemChecked(position, true);
         setTitle(mTabsTitles[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
+
+        mCurrentPosition = position;
     }
 
     @Override
@@ -202,15 +212,19 @@ public class MainActivity extends Activity implements
 
         super.onResume();
 
-        setup();
+        Log.d("STATE!", "Resume...");
+
+//        selectItem(mCurrentPosition);
 
     }
 
-    private void setup() {
+    @Override
+    public void onPostCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
+        super.onPostCreate(savedInstanceState, persistentState);
+        mDrawerToggle.syncState();
+    }
 
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, Secrets.parseAppID, Secrets.parseAppSecret);
+    private void setup() {
 
         currentUser = ParseUser.getCurrentUser();
 
@@ -291,6 +305,7 @@ public class MainActivity extends Activity implements
     @Override
     protected void onPause() {
         super.onPause();
+
 //        Wearable.DataApi.removeListener(mGoogleApiClient, this);
 //        mGoogleApiClient.disconnect();
     }
