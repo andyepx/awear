@@ -22,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
@@ -41,11 +42,12 @@ import fi.foyt.foursquare.api.entities.CompactVenue;
 
 public class ExpenseDetailsActivity extends Activity {
 
-    String mId = "";
+    private String mId = "";
     private GoogleMap googleMap;
     private List<String> venues = new ArrayList<String>();
-    CompactVenue[] loadedVenues;
-    ParseObject currentExpense;
+    private CompactVenue[] loadedVenues;
+    private ParseObject currentExpense;
+    private Marker mapMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,12 +98,18 @@ public class ExpenseDetailsActivity extends Activity {
 
                                     currentExpense.put("FoursquareVenueID", selectedVenue.getId());
                                     currentExpense.put("venue", selectedVenue.getName());
+                                    currentExpense.put("lat", selectedVenue.getLocation().getLat());
+                                    currentExpense.put("lng", selectedVenue.getLocation().getLng());
                                     currentExpense.saveInBackground(new SaveCallback() {
                                         @Override
                                         public void done(ParseException e) {
                                             if (e == null) {
                                                 TextView tv2 = (TextView) findViewById(R.id.expense_location);
                                                 tv2.setText(currentExpense.getString("venue"));
+
+                                                mapMarker.setPosition(new LatLng(currentExpense.getDouble("lat"), currentExpense.getDouble("lng")));
+                                                mapMarker.setTitle(currentExpense.getString("venue"));
+
                                             }
                                         }
                                     });
@@ -122,9 +130,9 @@ public class ExpenseDetailsActivity extends Activity {
 
                         googleMap = ((MapFragment) fm.findFragmentById(R.id.mapView)).getMap();
                         googleMap.setMyLocationEnabled(true);
-                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, 12));
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ll, 15));
 
-                        googleMap.addMarker(new MarkerOptions()
+                        mapMarker = googleMap.addMarker(new MarkerOptions()
                                 .title(expense.getString("venue"))
                                 .position(ll));
 
