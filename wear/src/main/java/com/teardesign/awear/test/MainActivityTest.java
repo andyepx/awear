@@ -7,9 +7,6 @@ import android.widget.TextView;
 import com.teardesign.awear.MainActivity;
 import com.teardesign.awear.R;
 
-/**
- * Created by Andx on 24/04/15.
- */
 public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> {
 
     private MainActivity mFirstTestActivity;
