@@ -342,7 +342,7 @@ public class DonutProgressAwear extends View {
         canvas.drawArc(finishedOuterRect, 270, getProgressAngle(), false, finishedPaint);
         canvas.drawArc(unfinishedOuterRect, 270+getProgressAngle(), 360 - getProgressAngle(), false, unfinishedPaint);
 
-        String text = prefixText + (progress / 5) + suffixText;
+        String text = prefixText + (progress / 2) + suffixText;
         if (!TextUtils.isEmpty(text)) {
             float textHeight = textPaint.descent() + textPaint.ascent();
             canvas.drawText(text, (getWidth() - textPaint.measureText(text)) / 2.0f, (getWidth() - textHeight) / 2.0f, textPaint);

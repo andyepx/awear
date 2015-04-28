@@ -106,7 +106,7 @@ public class HomeFragment extends Fragment {
                     }
 
                     final DonutProgressAwear dp = (DonutProgressAwear) v.findViewById(R.id.today_expenses);
-                    final int amountBar = 5 * todayAmounts[0];
+                    final int amountBar = 2 * todayAmounts[0];
 
                     final Timer timer = new Timer();
 

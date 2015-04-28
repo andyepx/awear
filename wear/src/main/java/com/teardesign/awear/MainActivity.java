@@ -63,11 +63,12 @@ public class MainActivity extends Activity implements
 
     GoogleApiClient mGoogleApiClient;
     private int count = 0;
+    private int finalcount = 0;
     private float currentScale = 0;
     private float scaleIncrease = 0;
     private float currentY = 0;
 
-    private static final ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledExecutorService worker = Executors.newSingleThreadScheduledExecutor();
     private long lastUpdatedAt;
     private Runnable task;
 
@@ -75,6 +76,7 @@ public class MainActivity extends Activity implements
     private ImageView mTip;
 
     private DelayedConfirmationListener mDcl;
+    private boolean iAmSaving = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,33 +115,37 @@ public class MainActivity extends Activity implements
                 final ImageView scale = (ImageView) findViewById(R.id.scale);
 
                 Display display = getWindowManager().getDefaultDisplay();
-                Point size = new Point();
+                final Point size = new Point();
                 display.getSize(size);
 
                 mDelayedView = (DelayedConfirmationView) findViewById(R.id.delayed_confirm);
                 mDelayedView.setTotalTimeMs(1500);
                 mDelayedView.setListener(mDcl);
-                //mDelayedView.setVisibility(INVISIBLE);
 
                 mTip = (ImageView) findViewById(R.id.tip);
 
-                task = new Runnable() {
-                    public void run() {
-                        Date now = new Date();
-                        long timeDifference = now.getTime() - lastUpdatedAt;
-                        if (timeDifference > 3000) {
-                            //worker.shutdown();
+                if (task == null) {
 
-                            //mTip.setVisibility(GONE);
+                    task = new Runnable() {
+                        public void run() {
+                            Date now = new Date();
+                            long timeDifference = now.getTime() - lastUpdatedAt;
+                            if (timeDifference > 3000) {
 
-                            //mDelayedView.setVisibility(VISIBLE);
-                            mDelayedView.start();
-                            //sendNewAmount();
-                        } else {
-                            worker.schedule(task, 1, TimeUnit.SECONDS);
+                                mDelayedView.start();
+
+                                TextView tv = (TextView) findViewById(R.id.text);
+                                tv.setText("saving expense...");
+                                tv.setTextSize(20);
+                                scale.setY(size.y);
+
+                            } else {
+                                worker.schedule(task, 1, TimeUnit.SECONDS);
+                            }
                         }
-                    }
-                };
+                    };
+
+                }
 
                 scale.setY(size.y);
                 currentY = size.y;
@@ -187,8 +193,26 @@ public class MainActivity extends Activity implements
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "Wearable Resume...");
 
-        //Log.d(TAG, "Wearable Resume...");
+        count = 0;
+
+        if (iAmSaving) {
+
+            iAmSaving = false;
+            TextView tv = (TextView) findViewById(R.id.text);
+            tv.setText("");
+
+            Point size = new Point();
+            Display display = getWindowManager().getDefaultDisplay();
+            display.getSize(size);
+            ImageView scale = (ImageView) findViewById(R.id.scale);
+            currentY = size.y;
+            scale.setY(size.y);
+
+            worker = Executors.newSingleThreadScheduledExecutor();
+
+        }
     }
 
     // Create a data map and put data in it
@@ -215,10 +239,12 @@ public class MainActivity extends Activity implements
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
+
                                 client.blockingConnect(1500, TimeUnit.MILLISECONDS);
                                 byte[] b = ByteBuffer.allocate(4).putInt(count).array();
                                 Wearable.MessageApi.sendMessage(client, nodeId, "COUNT", b);
                                 client.disconnect();
+
                             }
                         }).start();
 
@@ -228,6 +254,8 @@ public class MainActivity extends Activity implements
                 client.disconnect();
             }
         }).start();
+
+        iAmSaving = true;
 
         Intent intent = new Intent(this, ConfirmationActivity.class);
         intent.putExtra(ConfirmationActivity.EXTRA_ANIMATION_TYPE, ConfirmationActivity.SUCCESS_ANIMATION);
@@ -248,26 +276,7 @@ public class MainActivity extends Activity implements
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        for (DataEvent event : dataEvents) {
-            if (event.getType() == DataEvent.TYPE_CHANGED) {
-                // DataItem changed
-                DataItem item = event.getDataItem();
-                if (item.getUri().getPath().compareTo("/count_back") == 0) {
 
-                    DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-                    final String result = dataMap.getString(COUNT_KEY);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (result.length() > 0) {
-                                TextView tv = (TextView) findViewById(R.id.text);
-                                tv.setText(result);
-                            }
-                        }
-                    });
-                }
-            }
-        }
     }
 
     @Override
