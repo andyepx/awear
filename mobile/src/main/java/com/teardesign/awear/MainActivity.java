@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.CardView;
@@ -84,7 +85,7 @@ public class MainActivity extends Activity implements
         HistoryCardFragment.OnFragmentInteractionListener,
         MainFragment.OnFragmentInteractionListener,
         HomeFragment.OnFragmentInteractionListener,
-        SettingsFragment.OnFragmentInteractionListener,
+        SlideTabFragment.OnFragmentInteractionListener,
         HistoryCardLabelFragment.OnFragmentInteractionListener {
 
     private String[] mTabsTitles;
@@ -169,7 +170,8 @@ public class MainActivity extends Activity implements
     private void selectItem(int position) {
 
         if (position == 0) {
-            Fragment fragment = new HomeFragment();
+            //Fragment fragment = new HomeFragment();
+            Fragment fragment = new SlideTabFragment();
             Bundle args = new Bundle();
 
             FragmentManager fragmentManager = getFragmentManager();
@@ -185,7 +187,7 @@ public class MainActivity extends Activity implements
                     .replace(R.id.content_frame, fragment)
                     .commit();
         } else if (position == 2) {
-            Fragment fragment = new SettingsFragment();
+            Fragment fragment = new SlideTabFragment();
             Bundle args = new Bundle();
 
             FragmentManager fragmentManager = getFragmentManager();
@@ -277,15 +279,14 @@ public class MainActivity extends Activity implements
             // Set the drawer toggle as the DrawerListener
             mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-            Fragment fragment = new HomeFragment();
+            //Fragment fragment = new HomeFragment();
+            Fragment fragment = new SlideTabFragment();
             Bundle args = new Bundle();
 
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.content_frame, fragment)
                     .commit();
-
-
         } else {
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             startActivity(intent);

@@ -63,8 +63,8 @@ public class HomeFragment extends Fragment {
 
         final View v = inflater.inflate(R.layout.fragment_home, container, false);
 
-        TextView tv = (TextView) v.findViewById(R.id.userName);
-        tv.setText(ParseUser.getCurrentUser().getUsername());
+        //TextView tv = (TextView) v.findViewById(R.id.userName);
+        //tv.setText(ParseUser.getCurrentUser().getUsername());
 
         final int[] todayAmounts = {0,0};
         final ParseObject[] todayExpensiveLocation = {null};
@@ -105,7 +105,7 @@ public class HomeFragment extends Fragment {
                         tvLocation.setVisibility(View.GONE);
                     }
 
-                    final DonutProgressAwear dp = (DonutProgressAwear) v.findViewById(R.id.today_expenses);
+                    final DonutProgressAwear dp = (DonutProgressAwear) v.findViewById(R.id.today_expenses_donut);
                     final int amountBar = 2 * todayAmounts[0];
 
                     final Timer timer = new Timer();

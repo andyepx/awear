@@ -100,7 +100,7 @@ public class MainActivity extends Activity implements
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        scaleIncrease = size.y / 10;
+        scaleIncrease = size.y / 20;
         //scaleIncrease = 1 / 20;
 
         mDcl = this;
@@ -155,15 +155,15 @@ public class MainActivity extends Activity implements
                     @Override
                     public void onClick(View v) {
 
-                        if (count <= 18) {
+                        if (count <= 19) {
 
                             Date now = new Date();
                             lastUpdatedAt = now.getTime();
 
                             TextView tv = (TextView) findViewById(R.id.text);
-                            count += 2;
+                            count += 1;
 
-                            if (count == 2) {
+                            if (count == 1) {
                                 worker.schedule(task, 2, TimeUnit.SECONDS);
                             }
 

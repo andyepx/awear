@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -24,6 +25,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -78,6 +80,21 @@ public class ExpenseDetailsActivity extends Activity {
 
                         TextView tv3 = (TextView) findViewById(R.id.expense_date);
                         tv3.setText(expense.getCreatedAt().toString());
+
+                        Button btn = (Button) findViewById(R.id.delete_expense);
+                        btn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                currentExpense.deleteInBackground(new DeleteCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        finish();
+                                    }
+                                });
+
+                            }
+                        });
 
                         FragmentManager fm = getFragmentManager();
                         LatLng ll = new LatLng(expense.getDouble("lat"), expense.getDouble("lng"));

@@ -39,6 +39,7 @@ public class DonutProgressAwear extends View {
     private int innerBackgroundColor;
     private String prefixText = "";
     private String suffixText = "%";
+    private float rangeDivider = 2;
     private float innerBottomTextSize;
     private String innerBottomText;
     private float innerBottomTextHeight;
@@ -67,6 +68,7 @@ public class DonutProgressAwear extends View {
     private static final String INSTANCE_PROGRESS = "progress";
     private static final String INSTANCE_SUFFIX = "suffix";
     private static final String INSTANCE_PREFIX = "prefix";
+    private static final String INSTANCE_DIVIDER = "divider";
     private static final String INSTANCE_FINISHED_STROKE_WIDTH = "finished_stroke_width";
     private static final String INSTANCE_UNFINISHED_STROKE_WIDTH = "unfinished_stroke_width";
     private static final String INSTANCE_BACKGROUND_COLOR = "inner_background_color";
@@ -192,6 +194,15 @@ public class DonutProgressAwear extends View {
         if (this.progress > getMax()) {
             this.progress %= getMax();
         }
+        invalidate();
+    }
+
+    public float getRangeDivider() {
+        return rangeDivider;
+    }
+
+    public void setRangeDivider(float rangeDivider) {
+        this.rangeDivider = rangeDivider;
         invalidate();
     }
 
@@ -342,7 +353,7 @@ public class DonutProgressAwear extends View {
         canvas.drawArc(finishedOuterRect, 270, getProgressAngle(), false, finishedPaint);
         canvas.drawArc(unfinishedOuterRect, 270+getProgressAngle(), 360 - getProgressAngle(), false, unfinishedPaint);
 
-        String text = prefixText + (progress / 2) + suffixText;
+        String text = prefixText + (progress / rangeDivider) + suffixText;
         if (!TextUtils.isEmpty(text)) {
             float textHeight = textPaint.descent() + textPaint.ascent();
             canvas.drawText(text, (getWidth() - textPaint.measureText(text)) / 2.0f, (getWidth() - textHeight) / 2.0f, textPaint);
@@ -369,7 +380,7 @@ public class DonutProgressAwear extends View {
         bundle.putInt(INSTANCE_FINISHED_STROKE_COLOR, getFinishedStrokeColor());
         bundle.putInt(INSTANCE_UNFINISHED_STROKE_COLOR, getUnfinishedStrokeColor());
         bundle.putInt(INSTANCE_MAX, getMax());
-        bundle.putInt(INSTANCE_PROGRESS, getProgress());
+        bundle.putInt(INSTANCE_PROGRESS, (int)getProgress());
         bundle.putString(INSTANCE_SUFFIX, getSuffixText());
         bundle.putString(INSTANCE_PREFIX, getPrefixText());
         bundle.putFloat(INSTANCE_FINISHED_STROKE_WIDTH, getFinishedStrokeWidth());
@@ -396,6 +407,7 @@ public class DonutProgressAwear extends View {
             setMax(bundle.getInt(INSTANCE_MAX));
             setProgress(bundle.getInt(INSTANCE_PROGRESS));
             prefixText = bundle.getString(INSTANCE_PREFIX);
+            setRangeDivider(bundle.getInt(INSTANCE_DIVIDER));
             suffixText = bundle.getString(INSTANCE_SUFFIX);
             super.onRestoreInstanceState(bundle.getParcelable(INSTANCE_STATE));
             return;

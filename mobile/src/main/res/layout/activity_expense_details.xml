@@ -27,10 +27,18 @@
 
     <fragment
         android:layout_width="match_parent"
-        android:layout_height="270dp"
+        android:layout_height="250dp"
         android:layout_marginTop="20dp"
         android:id="@+id/mapView"
         android:name="com.google.android.gms.maps.MapFragment" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="Delete"
+        android:id="@+id/delete_expense"
+        android:layout_gravity="center"
+        />
 
     <TextView android:text="Edit Location"
         android:layout_marginTop="10dp"
@@ -42,5 +50,4 @@
         android:id="@+id/editlocation_spinner"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
-
 </LinearLayout>

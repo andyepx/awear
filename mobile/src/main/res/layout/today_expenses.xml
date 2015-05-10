@@ -1,0 +1,102 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:layout_height="match_parent" tools:context="com.teardesign.awear.SlideTabFragment">
+
+
+    <!--<LinearLayout-->
+    <!--android:layout_width="fill_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:gravity="right"-->
+    <!--android:layout_marginBottom="10dp"-->
+    <!--android:orientation="horizontal">-->
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:textSize="15dp"-->
+    <!--android:text="Hey, " />-->
+
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:textSize="15dp"-->
+    <!--android:id="@+id/userName"-->
+    <!--android:text="Name" />-->
+
+    <!--</LinearLayout>-->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:id="@+id/expenses_title"
+        android:text="Your expenses today" />
+
+    <com.teardesign.awear.DonutProgressAwear
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:layout_gravity="center"
+        android:id="@+id/today_expenses_donut"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        custom:donut_unfinished_stroke_width="15dp"
+        custom:donut_finished_stroke_width="15dp"
+        custom:donut_progress="0"
+        custom:donut_prefix_text="$ "
+        custom:donut_suffix_text=""
+        custom:donut_inner_bottom_text_size="10dp"
+        custom:donut_text_color="@color/primaryColorDark"
+        custom:donut_finished_color="@color/primaryColor"
+        custom:donut_inner_bottom_text_color="#fff" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="15dp"
+        android:layout_marginBottom="20dp"
+        android:text="of your $350 weekly budget" />
+
+    <!--
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/todayAmount"
+        android:paddingTop="10dp"
+        android:textSize="20dp" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginLeft="0dp"
+        android:background="@android:color/darker_gray"/>
+    -->
+
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:id="@+id/mapView"
+        android:name="com.google.android.gms.maps.MapFragment" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/todayExpensiveLabel"
+        android:visibility="gone"
+        android:textSize="20dp"
+        android:text="Most expensive location" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/todayExpensive"
+        android:visibility="gone"
+        android:paddingTop="10dp"
+        android:textSize="18dp" />
+</LinearLayout>
+

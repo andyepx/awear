@@ -3,6 +3,6 @@
     <string-array name="tabs_array">
         <item>Home</item>
         <item>History</item>
-        <item>Settings</item>
+        <!--<item>Social</item>-->
     </string-array>
 </resources>

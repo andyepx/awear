@@ -5,39 +5,41 @@
     android:layout_height="match_parent" tools:context="com.teardesign.awear.HomeFragment">
 
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="right"
-        android:layout_marginBottom="10dp"
-        android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="15dp"
-                android:text="Hey, " />
+    <!--<LinearLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:gravity="right"-->
+        <!--android:layout_marginBottom="10dp"-->
+        <!--android:orientation="horizontal">-->
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textSize="15dp"-->
+                <!--android:text="Hey, " />-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="15dp"
-                android:id="@+id/userName"
-                android:text="Name" />
+            <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textSize="15dp"-->
+                <!--android:id="@+id/userName"-->
+                <!--android:text="Name" />-->
 
-        </LinearLayout>
+        <!--</LinearLayout>-->
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="25dp"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:id="@+id/expenses_title"
         android:text="Your expenses today" />
 
     <com.teardesign.awear.DonutProgressAwear
         xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:layout_gravity="center"
-        android:id="@+id/today_expenses"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:id="@+id/today_expenses_donut"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         custom:donut_unfinished_stroke_width="15dp"
@@ -49,6 +51,20 @@
         custom:donut_text_color="@color/primaryColorDark"
         custom:donut_finished_color="@color/primaryColor"
         custom:donut_inner_bottom_text_color="#fff" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="15dp"
+        android:layout_marginBottom="20dp"
+        android:text="of your $50 daily budget" />
+
+    <fragment
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:id="@+id/mapViewHome"
+        android:name="com.google.android.gms.maps.MapFragment" />
 
     <!--
     <TextView
@@ -72,13 +88,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/todayExpensiveLabel"
-        android:textSize="25dp"
+        android:visibility="gone"
+        android:textSize="20dp"
         android:text="Most expensive location" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/todayExpensive"
+        android:visibility="gone"
         android:paddingTop="10dp"
-        android:textSize="20dp" />
+        android:textSize="18dp" />
 </LinearLayout>
 
