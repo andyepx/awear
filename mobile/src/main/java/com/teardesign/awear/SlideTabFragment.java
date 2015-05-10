@@ -1,12 +1,14 @@
 package com.teardesign.awear;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
@@ -36,6 +38,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -183,6 +186,15 @@ public class SlideTabFragment extends Fragment {
 
         private GoogleMap googleMapHome;
         private GoogleMap googleMap;
+
+                                        // AVG, V
+                                       // Mon       Tue       Wed       Thu      Fri       Sat      Sun
+        private int mockData[][][] = { { {28, 18}, {20, 21}, {22, 23}, {23, 18}, {24, 22}, {24, 31}, {22, 25} },   // Mary
+                                       { {20, 12}, {23, 25}, {21, 24}, {20, 20}, {20, 20}, {24, 33}, {23, 22} },   // Tom
+                                       { {21, 13}, {22, 21}, {21, 22}, {21, 22}, {22, 19}, {21, 21}, {21, 22} },   // Elle
+                                       { {25, 15}, {29, 16}, {28, 33}, {26, 29}, {27, 20}, {29, 29}, {27, 35} } }; // Jack
+
+        private String names[] = {"Mary", "Tom", "Elle", "Jack"};
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
@@ -448,6 +460,11 @@ public class SlideTabFragment extends Fragment {
                     public void done(List<ParseObject> scoreList, com.parse.ParseException e) {
                         if (e == null) {
 
+
+                            int countV = 0;
+                            todayAmounts[0] = 0;
+                            weekAmounts[0] = 0;
+
                             for (ParseObject sl : scoreList) {
 
                                 Calendar c = Calendar.getInstance();
@@ -459,20 +476,25 @@ public class SlideTabFragment extends Fragment {
 
                                 if (days <= 7) {
                                     weekAmounts[0] += sl.getInt("amount");
+                                    countV++;
                                 }
 
                                 if (c.get(Calendar.ERA) == d.get(Calendar.ERA) &&
                                         c.get(Calendar.YEAR) == d.get(Calendar.YEAR) &&
                                         c.get(Calendar.DAY_OF_YEAR) == d.get(Calendar.DAY_OF_YEAR)) {
+
                                     todayAmounts[0] += sl.getInt("amount");
+
                                 }
                             }
 
-                            ArrayList<String> xVals = new ArrayList<String>();
-                            xVals.add("Jen"); xVals.add("Mary"); xVals.add("Beth"); xVals.add("You");
-                            xVals.add("Eloise"); xVals.add("John"); xVals.add("Max"); xVals.add("Paul");
+                            float userAvg = weekAmounts[0]/countV;
 
-                            BarChart rl = (BarChart) view.findViewById(R.id.chart);
+                            ArrayList<String> xVals = new ArrayList<String>();
+                            //xVals.add("Jen"); xVals.add("Mary"); xVals.add("Beth"); xVals.add("You");
+                            //xVals.add("Eloise"); xVals.add("John"); xVals.add("Max"); xVals.add("Paul");
+
+                            CombinedChart rl = (CombinedChart) view.findViewById(R.id.chart);
                             rl.setDragEnabled(false);
                             rl.setPinchZoom(false);
                             rl.setScaleXEnabled(false);
@@ -484,7 +506,7 @@ public class SlideTabFragment extends Fragment {
                             YAxis leftAxis = rl.getAxisLeft();
                             leftAxis.setDrawGridLines(false);
 
-                            YAxis rightAxis = rl.getAxisRight();
+                            // YAxis rightAxis = rl.getAxisRight();
 
                             XAxis xAxis = rl.getXAxis();
                             xAxis.setDrawLabels(true);
@@ -492,84 +514,132 @@ public class SlideTabFragment extends Fragment {
                             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 
                             ArrayList<BarEntry> valsComp1 = new ArrayList<BarEntry>();
+                            ArrayList<Entry> valsCompAvg = new ArrayList<Entry>();
 
-                            BarEntry c1e1 = new BarEntry(generateRandomDay(10f, 0), 0);
-                            valsComp1.add(c1e1);
-                            BarEntry c1e2 = new BarEntry(generateRandomDay(26f, 1), 1);
-                            valsComp1.add(c1e2);
-                            BarEntry c1e3 = new BarEntry(generateRandomDay(8f, 2), 2);
-                            valsComp1.add(c1e3);
-                            BarEntry c1e4 = new BarEntry((float) todayAmounts[0], 3);
-                            valsComp1.add(c1e4);
-                            BarEntry c1e5 = new BarEntry(generateRandomDay(4f, 4), 4);
-                            valsComp1.add(c1e5);
-                            BarEntry c1e6 = new BarEntry(generateRandomDay(32f, 5), 5);
-                            valsComp1.add(c1e6);
-                            BarEntry c1e7 = new BarEntry(generateRandomDay(18f, 6), 6);
-                            valsComp1.add(c1e7);
-                            BarEntry c1e8 = new BarEntry(generateRandomDay(16f, 7), 7);
-                            valsComp1.add(c1e8);
+                            Calendar c = Calendar.getInstance();
+
+                            xVals.add("Me");
+                            valsComp1.add(new BarEntry((float) todayAmounts[0], 0));
+                            valsCompAvg.add(new Entry(userAvg, 0));
+
+                            int storyData[] = {0, 0, 0};
+
+                            for (int i = 0; i < names.length; i++) {
+                                if (i == 0) {
+                                    storyData[1] = mockData[i][c.get(Calendar.DAY_OF_WEEK)-1][1];
+                                    storyData[2] = mockData[i][c.get(Calendar.DAY_OF_WEEK)-1][0];
+                                } else {
+                                    if (mockData[i][c.get(Calendar.DAY_OF_WEEK)-1][1] < storyData[1]) {
+                                        storyData[1] = mockData[i][c.get(Calendar.DAY_OF_WEEK)-1][1];
+                                        storyData[2] = mockData[i][c.get(Calendar.DAY_OF_WEEK)-1][0];
+                                        storyData[0] = i;
+                                    }
+                                }
+                                xVals.add(names[i]);
+                                valsComp1.add(new BarEntry(mockData[i][c.get(Calendar.DAY_OF_WEEK)-1][1], i+1));
+                                valsCompAvg.add(new Entry(mockData[i][c.get(Calendar.DAY_OF_WEEK)-1][0], i+1));
+                            }
+
+                            String storyOther = "";
+                            if (storyData[1] > storyData[2]) {
+                                storyOther = names[storyData[0]] + " spent more than their average.";
+                            } else if (storyData[1] < storyData[2]) {
+                                storyOther = names[storyData[0]] + " spent less than their average.";
+                            }
+
+                            String storyUser = "";
+                            if (todayAmounts[0] > userAvg) {
+                                storyUser = "You spent more than your average.";
+                            } else if (todayAmounts[0] < userAvg) {
+                                storyUser = "You spent less than your average.";
+                            }
+
+                            TextView story = (TextView) view.findViewById(R.id.storyText);
+                            story.setText(storyUser + "\n" + storyOther);
 
                             BarDataSet setComp1 = new BarDataSet(valsComp1, "Data");
                             setComp1.setColors(ColorTemplate.JOYFUL_COLORS);
 
+                            LineDataSet setCompAvg = new LineDataSet(valsCompAvg, "Avg");
+                            setCompAvg.setColors(ColorTemplate.COLORFUL_COLORS);
+
                             ArrayList<BarDataSet> dataSets = new ArrayList<BarDataSet>();
                             dataSets.add(setComp1);
 
-                            BarData data = new BarData(xVals, dataSets);
+                            List<LineDataSet> dataSetsAvg = new ArrayList<LineDataSet>();
+                            dataSetsAvg.add(setCompAvg);
+
+                            CombinedData data = new CombinedData(xVals);
+                            data.setData(new BarData(xVals, dataSets));
+                            data.setData(new LineData(xVals, dataSetsAvg));
                             rl.setData(data);
                             rl.invalidate(); // refresh
 
+//                            BarEntry c1e1 = new BarEntry(generateRandomDay(10f, 0), 0);
+//                            valsComp1.add(c1e1);
+//                            BarEntry c1e2 = new BarEntry(generateRandomDay(26f, 1), 1);
+//                            valsComp1.add(c1e2);
+//                            BarEntry c1e3 = new BarEntry(generateRandomDay(8f, 2), 2);
+//                            valsComp1.add(c1e3);
+//                            BarEntry c1e4 = new BarEntry((float) todayAmounts[0], 3);
+//                            valsComp1.add(c1e4);
+//                            BarEntry c1e5 = new BarEntry(generateRandomDay(4f, 4), 4);
+//                            valsComp1.add(c1e5);
+//                            BarEntry c1e6 = new BarEntry(generateRandomDay(32f, 5), 5);
+//                            valsComp1.add(c1e6);
+//                            BarEntry c1e7 = new BarEntry(generateRandomDay(18f, 6), 6);
+//                            valsComp1.add(c1e7);
+//                            BarEntry c1e8 = new BarEntry(generateRandomDay(16f, 7), 7);
+//                            valsComp1.add(c1e8);
 
-
-                            BarChart rl2 = (BarChart) view.findViewById(R.id.chart2);
-                            rl2.setDragEnabled(false);
-                            rl2.setPinchZoom(false);
-                            rl2.setScaleXEnabled(false);
-                            rl2.setScaleYEnabled(false);
-                            rl2.setDoubleTapToZoomEnabled(false);
-                            rl2.getLegend().setEnabled(false);
-                            rl2.getAxisRight().setDrawLabels(false);
-
-                            YAxis leftAxis2 = rl2.getAxisLeft();
-                            leftAxis2.setDrawGridLines(false);
-
-                            //YAxis rightAxis = rl2.getAxisRight();
-
-                            XAxis xAxis2 = rl2.getXAxis();
-                            xAxis2.setDrawLabels(true);
-                            xAxis2.setLabelsToSkip(0);
-                            xAxis2.setPosition(XAxis.XAxisPosition.BOTTOM);
-
-                            ArrayList<BarEntry> valsComp2 = new ArrayList<BarEntry>();
-
-                            BarEntry c2e1 = new BarEntry(generateRandomWeek(7*12f, 0), 0);
-                            valsComp2.add(c2e1);
-                            BarEntry c2e2 = new BarEntry(generateRandomWeek(7*26f, 1), 1);
-                            valsComp2.add(c2e2);
-                            BarEntry c2e3 = new BarEntry(generateRandomWeek(7*8f, 2), 2);
-                            valsComp2.add(c2e3);
-                            BarEntry c2e4 = new BarEntry((float) weekAmounts[0], 3);
-                            valsComp2.add(c2e4);
-                            BarEntry c2e5 = new BarEntry(generateRandomWeek(7*4f, 4), 4);
-                            valsComp2.add(c2e5);
-                            BarEntry c2e6 = new BarEntry(generateRandomWeek(7*32f, 5), 5);
-                            valsComp2.add(c2e6);
-                            BarEntry c2e7 = new BarEntry(generateRandomWeek(7*18f, 6), 6);
-                            valsComp2.add(c2e7);
-                            BarEntry c2e8 = new BarEntry(generateRandomWeek(7*16f, 7), 7);
-                            valsComp2.add(c2e8);
-
-                            BarDataSet setComp2 = new BarDataSet(valsComp2, "Data");
-                            setComp2.setColors(ColorTemplate.JOYFUL_COLORS);
-                            //setComp1.setLabel("");
-
-                            ArrayList<BarDataSet> dataSets2 = new ArrayList<BarDataSet>();
-                            dataSets2.add(setComp2);
-
-                            BarData data2 = new BarData(xVals, dataSets2);
-                            rl2.setData(data2);
-                            rl2.invalidate(); // refresh
+//                            BarChart rl2 = (BarChart) view.findViewById(R.id.chart2);
+//                            rl2.setDragEnabled(false);
+//                            rl2.setPinchZoom(false);
+//                            rl2.setScaleXEnabled(false);
+//                            rl2.setScaleYEnabled(false);
+//                            rl2.setDoubleTapToZoomEnabled(false);
+//                            rl2.getLegend().setEnabled(false);
+//                            rl2.getAxisRight().setDrawLabels(false);
+//
+//                            YAxis leftAxis2 = rl2.getAxisLeft();
+//                            leftAxis2.setDrawGridLines(false);
+//
+//                            //YAxis rightAxis = rl2.getAxisRight();
+//
+//                            XAxis xAxis2 = rl2.getXAxis();
+//                            xAxis2.setDrawLabels(true);
+//                            xAxis2.setLabelsToSkip(0);
+//                            xAxis2.setPosition(XAxis.XAxisPosition.BOTTOM);
+//
+//                            ArrayList<BarEntry> valsComp2 = new ArrayList<BarEntry>();
+//
+//                            BarEntry c2e1 = new BarEntry(generateRandomWeek(7*12f, 0), 0);
+//                            valsComp2.add(c2e1);
+//                            BarEntry c2e2 = new BarEntry(generateRandomWeek(7*26f, 1), 1);
+//                            valsComp2.add(c2e2);
+//                            BarEntry c2e3 = new BarEntry(generateRandomWeek(7*8f, 2), 2);
+//                            valsComp2.add(c2e3);
+//                            BarEntry c2e4 = new BarEntry((float) weekAmounts[0], 3);
+//                            valsComp2.add(c2e4);
+//                            BarEntry c2e5 = new BarEntry(generateRandomWeek(7*4f, 4), 4);
+//                            valsComp2.add(c2e5);
+//                            BarEntry c2e6 = new BarEntry(generateRandomWeek(7*32f, 5), 5);
+//                            valsComp2.add(c2e6);
+//                            BarEntry c2e7 = new BarEntry(generateRandomWeek(7*18f, 6), 6);
+//                            valsComp2.add(c2e7);
+//                            BarEntry c2e8 = new BarEntry(generateRandomWeek(7*16f, 7), 7);
+//                            valsComp2.add(c2e8);
+//
+//                            BarDataSet setComp2 = new BarDataSet(valsComp2, "Data");
+//                            setComp2.setColors(ColorTemplate.JOYFUL_COLORS);
+//                            //setComp1.setLabel("");
+//
+//                            ArrayList<BarDataSet> dataSets2 = new ArrayList<BarDataSet>();
+//                            dataSets2.add(setComp2);
+//
+//                            BarData data2 = new BarData(xVals, dataSets2);
+//                            rl2.setData(data2);
+//                            rl2.invalidate(); // refresh
 
                         }
                     }
