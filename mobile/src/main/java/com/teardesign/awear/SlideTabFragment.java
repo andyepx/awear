@@ -474,7 +474,7 @@ public class SlideTabFragment extends Fragment {
                                 long diff = c.getTimeInMillis() - d.getTimeInMillis();
                                 long days = diff / (24 * 60 * 60 * 1000);
 
-                                if (days <= 7) {
+                                if (c.get(Calendar.YEAR) == d.get(Calendar.YEAR) && c.get(Calendar.WEEK_OF_YEAR) == d.get(Calendar.WEEK_OF_YEAR)) {
                                     weekAmounts[0] += sl.getInt("amount");
                                     countV++;
                                 }

@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 
-
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
@@ -9,8 +8,8 @@ android {
         applicationId "com.teardesign.awear"
         minSdkVersion 21
         targetSdkVersion 21
-        versionCode 12
-        versionName "1.1.2"
+        versionCode 13
+        versionName "1.1.3"
     }
     buildTypes {
         release {
